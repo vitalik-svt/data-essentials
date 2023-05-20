@@ -19,12 +19,12 @@ And all questions splitted two different markdown files, united by one particula
 
 If `_tasks` suffix used, that means, that this file contains examples of some coding tasks
 
-de-essentials
-├── Python     		(general info about python (de related))
-├── Python_tasks	(some coding tasks)
-├── Databases		(general info about databases)
-├── SQL_tasks		(some sql tasks)
-├── ...
+de-essentials<br/>
+├── Python     		(general info about python (de related))<br/>
+├── Python_tasks	(some coding tasks)<br/>
+├── Databases		(general info about databases)<br/>
+├── SQL_tasks		(some sql tasks)<br/>
+├── ...<br/>
 └── README<br/>
 
 For sure, it's quite hard sometimes to understand, in which particular category (i mean, when that repo, hopefully will be bigger)<br/><br/>
