@@ -51,8 +51,16 @@ Three of them almost impossible, so there BASE approach:
 
 ## Isolation Levels
 
+- `Read Commited`: have two main parts 
+	- `no dirty reads`: other transactions don't read any uncommited writes
+	- `no dirty writes`: other transaction, that wants to write need to wait until fist transaction commits
 
+- `Snapshot Isolation Level`: whtn each transaction reads their own version of data, that commited when that transaction started
 
+- `Serializability`: based on one of three approaches:
+	- `real isolation`: when you have not so much transactions, and all of them fast you can just evaluate queries one by one
+	- `2 phased commit`: quite slow
+	- `Serializable Snapshot Isolation`
 
 ## What is Cursor. Types of Cursors
 
@@ -78,13 +86,76 @@ so it's O(N)
 
 ## SQL Questions
 
-- Difference between Truncate and Delete:
+- Difference between Truncate and Delete: Delete delete row by row and log that. Truncate just drop whole table and recreates it
+- What languages SQL has?: DDL (definition: create, alter), DML (manipulation: select), DCL (control: grant)
+- Can you join with Null?: No, Null - not compatible, so Join Null on Null will be Null, so result will not appeared
+- Difference between Union and Union ALL: Union drop duplicates in result query
+- Which query returns biggest number:
 
+```sql
+-- a
+select count(distinct first.counter_column) 
+from first
+left join second 
+    on first.join_key = second.join_key 
+where second.filter_column >= 5
 
+-- b
+select count(distinct first.counter_column) 
+from first
+left join second 
+on first.join_key = second.join_key 
+and second.filter_column >= 5
+
+-- c
+select count(distinct first.counter_column) 
+from first
+right join second
+    on first.join_key = second.join_key
+where second.filter_column >= 5
+
+-- d
+select count(distinct first.counter_column)
+from first
+right join second
+on first.join_key = second.join_key 
+and second.filter_column >= 5
+```
+
+Answer: b, because where condition filter result, but join - not (for left join)
+
+- how many rows will get same query but without distinct:
+```sql
+select distinct a, b, c
+          , sum(d) as revenue 
+from table
+group by a, b, c
+```
+Answer: Same amount
+
+- What you need to add, to get share of revenue from the same user, but in previous day?
+```sql
+select event_date, 
+	   user_id, 
+	   revenue, 
+	   <?>
+from revenue
+order by event_date
+```
+Answer: revenue / lag(revenue) Over(Partition by user_id order by event_date desc)
+
+- What types of window functions do you know?
+	
+	- lag(): previous row
+	- lead(): next row
+	- rownumber: just add rows number counter
+	- rank: if there two rows with the same number, next number will be skipped
+	- dense rank: no numbers skipped
+	
 
 ## Distribution, Partition
 
-- `Distribution` - Process, that 
+- `Distribution` - Process, that distributes data by some key (random, preferrably), on smaller parts, so all nodes can perform query
 - `Partitions` - Partition by monthes
 
 
