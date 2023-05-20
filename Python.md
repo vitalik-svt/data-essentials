@@ -1,4 +1,4 @@
-# Python questions
+# Python
 
 ## Built-in Sequences, Objects, Functions
 
@@ -89,7 +89,7 @@ id(123), id(124), id(125)
 it's C-type array.
 Like tuple, but containts only objects of one type, which takes much less space
 
-```
+```python
 import array
 array.array('i', [1,2,3])
 ```
@@ -102,28 +102,6 @@ range(i, j)
 Can be used in list comprehensions:
 
 `[x for x in range(i, j)]`
-
-**Comprehentions**
-
-`[x for x in range(i, j)]` - returns list from i to j-1
-`{x: y for x, i in enumerate(range(i, j))}` - returns dict from i to j-1 
-`{x for x in range(i, j)}` - returns set from i to j-1
-
-you can't define tuple comprehention, it need to be mabe like
-`tuple([x for x in range(i, j)])`
-
-**Generator**
-
-Object, that can be called only once, because it stored only previous 
-So you can restart it, because he is don't know where is start
-
-You can implement generators by using yield instead of return
-
-Simple generator expresstion:
-`(x for x in range(i, j))`
-
-it returns one x at a time, and don't stored anything else, so it can be used for infinite sequence without consuming memory
-
 
 ### How you can get rid of duplicates in your list?
 
@@ -145,25 +123,25 @@ from Collections import OrderedDict
 
 3. You can use list comprehention:
 
-```
+```python
 new_list = []
 [new_list.append(x) for x in original_list if x not in new_list]
 ```
 
 4. Or just good old loop:
 
-```
+```python
 new_list = []
 for x in original_list:
 	if x not new_list:
 		new_list.append(x)
 ```
 
-### multi assignment
+### Multi assignment
 
 nice thing in Python, that you can assign objects to multiple variables (tbh it's more link varibales with existing objects)
 
-```
+```python
 def some_func():
 	return (1, 2, 3)
 
@@ -208,7 +186,7 @@ When you iterate over dict (`for x in dct`), you iterates over keys!
 
 Also nice example of creating dict from two sequences (of the same length)
 
-```
+```python
 keys = ['a', 'b', 'c']
 values = [1 ,2 ,3]
 dct = dict(zip(keys, values))
@@ -216,7 +194,7 @@ dct = dict(zip(keys, values))
 
 `zip()` creates list of pairs (in that case), and `dict()` considers that pairs as key, value pairs
 
-### hashmap
+### Hashmap
 
 it's what under the hood of dicts.
 hasmap it's sparse array (python usually reserves around 30% of space blank) for have place to adding new key:values in future.
@@ -249,7 +227,7 @@ function defines with def keyword
 parameter is the variable listed inside the parentheses in the function definition.
 argument is the value that are sent to the function when it is called.
 
-```
+```python
 def functionname(parameter):
 	pass
 
@@ -257,12 +235,11 @@ def functionname(parameter):
 functionname(argument)
 ```
 
-
-### args and kwargs
+### Args and kwargs
 
 it's agreement to use that particular words in function declaration.
 
-```
+```python
 def some_func(*args, **kwargs):
 	pass
 ```
@@ -277,8 +254,7 @@ Note:
 It's crutial to use immutable objects as default to function!
 Because when you call that function many times, it whill use the same object and change it
 
-```
-python
+```python
 def foo(bar=[]):
     bar.append(1)
     return bar
@@ -290,7 +266,7 @@ foo()
 >>> [1, 1, 1]
 ``` 
 
-### lambda functions
+### Lambda functions
 
 It's functions, that doesn't reserve space in namespace, that means python don't need to search them to call.
 So it's faster
@@ -306,14 +282,196 @@ In particular instruction for interpreter
 like `print`, `pass`, or something 
 (*if someone can provide some meaningful description that would be great*) 
 
-## Variables and Arguments
+### Variables and Arguments
 
-In Python every Variable it's pointer.
+In Python every variable it is pointer.
+So when you define variable with object:
+`variable = object`
 
-So when you 
+Python creates object, and than **assigns** it with variable
 
+Aaand we slightly go to **copy** and **deepcopy** functions, which can be useful to know while working with mutable objects
 
-Also, evety object contains link counter, and when it becomes equal to zero, object will be deleted
+`b = a.copy()`
+returns shallow copy of b and assign it with a
+So it returns new object, but with old elements in it
+
+let's assume, that a is a list
+if we create shallow copy, python create new list object with different id, but that list will contain links to elements of a list
+
+And if we change that somehow (if list a containts mutable elements), then they will change for b list too
+
+To avoid that you need to use **deepcopy**, function, that recursively copied all nested objects in that list
+
+Also, every object contains link counter, and when it becomes equal to zero, object will be deleted
+
+## Iterable, Iterators, Generators
+
+### Iterable
+
+iterable – Object, that can return values one by one
+
+Implemented methods:
+
+`__iter__()` - returns iterator for given object
+OR
+`__getitem__()` - old version, or something
+
+Iterable can be used in for loop, or other functions, that expects sequence (sum, min, max, map)
+
+```python
+class SomeIterable1(collections.abc.Iterable):
+    def __iter__(self):
+        pass
+
+class SomeIterable2:
+    def __iter__(self):
+        pass
+
+print(isinstance(SomeIterable1(), collections.abc.Iterable))
+# True
+print(isinstance(SomeIterable2(), collections.abc.Iterable))
+# True
+```
+
+`iter()` functions checks for `__iter__()` method first of all, but if there is no this method, it checks for `__getitem__` then. Thats why you can iterate through strings, even if they doesn't have `__iter__()`. If there is no this methods founded, then `TypeError` will be reisen.
+
+```python
+from string import ascii_letters
+
+class SomeIterable3:
+    def __getitem__(self, key):
+        return ascii_letters[key]
+
+for item in SomeIterable3():
+    print(item)
+```
+
+### Iterator
+
+Object, that provide data flow.
+It has `__next__()` method, that defines how to calculate next value
+
+If there is no data to calculate left, `StopIteration` raisen
+
+Iterator must have `__iter__` methods, which returns self, so Iterator is Iterable, and, let's say, it's overhead onto Iterable
+
+### Comprehentions
+
+`[x for x in range(i, j)]` - returns list from i to j-1
+`{x: y for x, i in enumerate(range(i, j))}` - returns dict from i to j-1 
+`{x for x in range(i, j)}` - returns set from i to j-1
+
+you can't define tuple comprehention, it need to be mabe like
+`tuple([x for x in range(i, j)])`
+
+### Generator, Yield
+
+Object, that can be called only once, because it stored only previous 
+So you can restart it, because he is don't know where is start
+
+You can implement generators by using **yield** instead of **return**
+
+Simple generator expresstion:
+`(x for x in range(i, j))`
+
+it returns one x at a time, and don't stored anything else, so it can be used for infinite sequence without consuming memory
+
+## Classes, Objects
+
+### Underscores
+
+- `_foo`- Only a convention. A way for the programmer to indicate that the variable is private (whatever that means in Python).
+- `__foo`- This has real meaning. The interpreter replaces this name with `_classname__foo` as a way to ensure that the name will not overlap with a similar name in another class.
+- `__foo__`- Only a convention. A way for the Python system to use names that won't conflict with user names.
+
+### Dunder (Magic) methods
+
+- `__init__` - object initializer
+- `__add__`-  add to another object
+- `__eq__`-  equality check with different object
+- `__iter__`- returns iterator
+- etc.
+
+### Class vs Static Methods
+
+defined by decorators:
+@classmethod and @staticmethod
+
+Difference:
+
+- A class method takes cls as the first parameter while a static method needs no specific parameters.
+- A class method can access or modify the class state while a static method can’t access or modify it.
+- In general, static methods know nothing about the class state. They are utility-type methods that take some parameters and work upon those parameters. On the other hand class methods must have class as a parameter.
+
+### Context Manager
+
+it's `with` operator, that define methods:
+- `__enter__` - after entering context manager
+- `__exit__` - after leaving context manager (in case of exception too)
+
+And in that methods you need to implement all the things. For example, in `with open(file) as f:` in `__exit__` implemented `close` method, so files are getting closed
+
+### Comparing objects
+
+Objects compare by their id mostly, if `__eq__` not reimplemented
+
+## Modules, Packages
+
+### Module
+
+Module - it's element of whole programm, logically separated from another. File, usually
+
+Modules can be united into Packages, and then, into Libraries
+
+Name of module placed in  `__name__` variable. If module not imported, but runned itself `__name__` became `"__main__"`.
+
+### How Python seeks modules
+
+- in directories with launched scripts
+- in env variable PYTHONPATH
+
+### Package
+
+It's folder with modules and `__init__.py` in it
+ 
+## Exceptions
+
+```python
+try:
+       # Some Code.... 
+
+except:
+       # optional block
+       # Handling of exception (if required)
+       # it can be multiple except code, so you need to handle exceptions from more specific on top, to more general below
+else:
+       # execute if no exception
+finally:
+       # always executed code
+
+```
+
+## Decorators
+
+Object, that incapsulate logic of anything 
+
+## GIL, Threads, Processes
+
+**GIL** - Global Lock Interpreter. It's Service, that let run only one Thread at a time
+
+**Thread** - Launched in cooperative address space, and have shared memory
+
+**Process** - Independent things, that have separated memory, CPU
+
+## Input/Output
+
+### json
+
+- `dump` - json -> file
+- `dumps` - json -> string
+- `load` - file -> json
+- `loads` - string -> json
 
 
 ## Links and literature
