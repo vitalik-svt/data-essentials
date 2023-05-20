@@ -1,5 +1,7 @@
 # Python
 
+That document based on https://github.com/yakimka/python_interview_questions
+
 ## Built-in Sequences, Objects, Functions
 
 ### What is sequence
