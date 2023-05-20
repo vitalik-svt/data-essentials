@@ -1,26 +1,26 @@
-# de-interview-preparation
+# de-essentials
 
 ## Overview
-Questions and tasks for Data Engineering interview preparation.<br/>
-Made by non-native speaker (and non-native data engineer) for DE tech interview preparation in english.<br/>
+Questions and tasks for Data Engineers for interview preparation or something<br/>
+Made by non-native speaker (and non-native data engineer)<br/>
 This set of tasks and questions doesn't claim to be complete or correct, you have your own head on your shoulders.<br/><br/>
 
-Most python questions based on this repo (in Russian)<br/>
-https://github.com/yakimka/python_interview_questions<br/>
-
-## Contribution:
+## Contribution
+* Feel free to copy, clone and use it on your own, but tbh, it would be better, if you can add youn knowledge inplace, because it will be more convinient to store all in one place
 * Feel free to add or correct something
 * Please correct language mistakes too
-* If somehow this repo will grown into different areas, and not only into DE, it will be quite cool, so feel free add new files with different knowledge. May be in future it will be separated by folders
 
-## Organization of information:
+## Organization of information
+
+### Files and Folders
+
 For that time this repo doesn't contains any folders.<br/>
 And all questions splitted two different markdown files, united by one particular topic<br/><br/>
 
 If `_tasks` suffix used, that means, that this file contains examples of some coding tasks
 
 de-essentials<br/>
-├── Python     		(general info about python (de related))<br/>
+├── Python     		(general info about python (DE related))<br/>
 ├── Python_tasks	(some coding tasks)<br/>
 ├── Databases		(general info about databases)<br/>
 ├── SQL_tasks		(some sql tasks)<br/>
@@ -29,4 +29,19 @@ de-essentials<br/>
 
 For sure, it's quite hard sometimes to understand, in which particular category (i mean, when that repo, hopefully will be bigger)<br/><br/>
 
-So in future, when it will be info particularly about PostgreSQL DBMS, for example, it needed to create different md file for that topic only, and not make general 'Databases' topic bigger and bigger
+So in future, when it will be info particularly about PostgreSQL DBMS, for example, it needed to create separate file for that topic only, and not make general 'Databases' topic bigger and bigger with PostgreSQL staff
+
+### Infile markdown rules
+
+For purposes of convenience, uniformity and automatically generated table of contents (in future) let's use this rules
+
+* Use once and only once H1 heading (\#) at the top of md file, and name it like file itsel
+* Use H2 heading (\#\#) for particular topic inside file
+* Each heading should starts with Capital letter
+* Place Links and Sources for each file in the footer of each file
+
+Table of contents will contains only first and second headings level, where first - it's actually file name <br>
+And second  level - it's links for actual topics in file<br>
+Make sure, that tthere is not too less and not too much second level topics, in order to make table of Contents convinient to use<br>
+Someday it may be needed to, when it will be too much info about some topics in files
+
