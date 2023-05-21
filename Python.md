@@ -460,11 +460,29 @@ Object, that incapsulate logic of anything
 
 ## GIL, Threads, Processes
 
-**GIL** - Global Lock Interpreter. It's Service, that let run only one Thread at a time
+Async - сам питон в рамках одного треда/процесса управляет «потоками» своего выполнения. Ты пишешь это управление сам
 
-**Thread** - Launched in cooperative address space, and have shared memory
+Threading - операционная система создает треды и управляет ими.
+Тяжелая операция. Каждая создает свой интерпретатор (вроде как)
 
-**Process** - Independent things, that have separated memory, CPU
+Parallelism:
+
+multiprocessing - несколько ядер со своей памятью и т.д. Истинная параллельность
+
+
+**GIL** - Global Lock Interpreter. It's Service, that let only one Thread execute Python at once.
+
+**Thread** - Launched in cooperative address space, and have shared memory.
+You can use threading library or concurrent.
+Threads in that libraries handle by OS.
+
+**AsyncIO** - It's threading, but all the thnigs (changes of threads and so on) you need to write by yourself
+
+**Process** - Independent things, that have (no-shared) separated memory, CPU. And it's different Python processes
+
+### When Multiprocessing, and when Multithreading?
+
+Processing - it's mostly for CPU-comsuming operations, but multithreading - it's for operations, that frquently wait for somthing (I/O, requests)
 
 ## Input/Output
 

@@ -1,18 +1,14 @@
 # Airflow
 
-## Objects
+## Key Objects
 
-### DAG
+- DAG
+- Task
+- Operator
+- Hook
+- XCom
 
-### Task
-
-### Operator
-
-### Hook
-
-### XCom
-
-## Components
+## Key Components
 
 **Webserver** A Flask server running with Gunicorn that serves the Airflow UI.
 **Scheduler** A Daemon responsible for scheduling jobs. This is a multi-threaded Python process that determines what tasks need to be run, when they need to be run, and where they are run.
@@ -20,15 +16,11 @@
 **Executor** The mechanism for running tasks. An executor is running within the scheduler whenever Airflow is operational.
 **Worker** The process that executes tasks, as defined by the executor. Depending on which executor you choose, you may or may not have workers as part of your Airflow infrastructure.
 
-
 ## Types of executors
 
-### Sequential Executor
-
-### Local Executor
-
-### Celery Executor
-
-### Kubernetes Executer
+- Sequential Executor
+- Local Executor
+- Celery Executor
+- Kubernetes Executer
 
 
