@@ -469,16 +469,25 @@ Parallelism:
 
 multiprocessing - несколько ядер со своей памятью и т.д. Истинная параллельность
 
+**Process** - Independent things, that have (no-shared) separated memory, CPU etc. And it's different Python processes!
+It doesn't make sense to create more processes than cores/machines
 
 **GIL** - Global Lock Interpreter. It's Service, that let only one Thread execute Python at once.
 
 **Thread** - Launched in cooperative address space, and have shared memory.
 You can use threading library or concurrent.
-Threads in that libraries handle by OS.
+Threads in that libraries managed by OS!
 
-**AsyncIO** - It's threading, but all the thnigs (changes of threads and so on) you need to write by yourself
+**AsyncIO** - It's like threading, but all the thnigs (changes of threads and so on) you need to write by yourself.
+So while in Multithreading are:
+1 Process and Many threads (that created and maintained by OS)
 
-**Process** - Independent things, that have (no-shared) separated memory, CPU. And it's different Python processes
+But in AsyncIO are:
+1 Process, 1 Thread, and "sub-threads", but that "sub-threads" you need to manage (create, kill, stop, get execution from one to another, etc) by yourself, with your code. 
+
+So, AsyncIO it's more lightweight, than threading, but it's different code style, and programming approaches.
+Also, it can be used for reducing non-CPU time (IO, like library named, for example)
+
 
 ### When Multiprocessing, and when Multithreading?
 
