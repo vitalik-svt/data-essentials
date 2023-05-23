@@ -11,9 +11,6 @@ This set of tasks and questions doesn't claim to be complete or correct, you hav
 * Please correct language mistakes too
 
 ## Organization of information
-
-### Files and Folders
-
 Mostly this repo is for questions that can be answered in text.
 Because it's not about teach you, it's just a short description of concepts etc.
 
@@ -31,7 +28,7 @@ For sure, it's quite hard sometimes to understand, in which particular category 
 
 So in future, when it will be info particularly about PostgreSQL DBMS, for example, it needed to create separate file for that topic only, and not make general 'Databases' topic bigger and bigger with PostgreSQL staff.
 
-### In-file markdown rules
+## In-file markdown rules
 
 For purposes of convenience, uniformity and automatically generated table of contents (in future) let's use this rules:
 
