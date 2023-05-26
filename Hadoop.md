@@ -2,12 +2,12 @@
 
 ## Hadoop ecosystem ierarchy
 
-├── HDFS            
-├──── HBase                 
-├────── MapReduce                     
-├──────── Oozie         like ZooKeeper. Coordinates MR tasks
-├──────── Pig   		high-level MR commands language
-└──────── Hive 			high-level Sql-like MR commands lannguage
+├── HDFS <br>           
+├──── HBase <br>                
+├────── MapReduce <br>                    
+├──────── Oozie    (Like ZooKeeper. Coordinates MR tasks)<br>
+├──────── Pig      (high-level MR commands language)<br>
+└──────── Hive 	   (high-level Sql-like MR commands lannguage)<br>
 
 ### HDFS
 
@@ -30,6 +30,7 @@ HDFS Daemons:
 	- runs on every machine in cluster 
 
 Storage:
+
 	- Files consist of blocks
 	- Each datanode contain blocks from different files
 	- Same blocks can be duplicated to different datanodes in reliability purposes (3 copies by default)
@@ -38,19 +39,20 @@ Storage:
 
 ### HBase
 
-It's will be too long to full scan HDFS each time, so HBase it's columnar database, which used like "index".
-It contain information about all files in HDFS.
-With HBase you can access to particular file/part of file in HDFS.
-Based on Google Big Table
+It's will be too long to full scan HDFS each time, so HBase it's columnar database, which used like "index".<br>
+It contain information about all files in HDFS.<br>
+With HBase you can access to particular file/part of file in HDFS.<br>
+Based on Google Big Table<br>
 
 - Distributed (sharding) data Base
 - Column based (Column-families)
 
 
-Table consist of Regions
-Region - it's group of rows, which stored together
+Table consist of Regions<br>
+Region - it's group of rows, which stored together<br>
 
 Daemons:
+
 - HMaster (Master server) - metadata and so on
 - Region Server - handle with one or multiple regions. Each region can belongs to only one region server
 
@@ -90,8 +92,8 @@ In hadoop every MR starts with HDFS and ends with HDFS.
 
 In Hadoop, MR works over HDFS, and MR processes have their own trackers (daemons):
 
-	- **JobTracker** - main tracker with all metadata and so on
-	- **TaskTracker** - Process, that launches at the same node, as DataNode (HDFS)
+- **JobTracker** - main tracker with all metadata and so on
+- **TaskTracker** - Process, that launches at the same node, as DataNode (HDFS)
 
 
 ### Pig
@@ -101,9 +103,10 @@ Have their own PigLatin language for MR tasks
 Can be launched locally or on MR mode
 
 Core components in Pig:
-	- **Field** - analogue of cell
-	- **Tuple** - analogue of row in a table
-	- **Bag** - analogut of table
+
+- **Field** - analogue of cell
+- **Tuple** - analogue of row in a table
+- **Bag** - analogut of table
 
 Main commands:
 - load

@@ -2,7 +2,7 @@
 
 ## What is transaction?
 
-transaction - it's atomic operation, which can be completed fully, or not
+transaction - it's atomic operation, which can be completed fully, or not. <br>
 We can combine different operations into one transaction, when we need to be sure, that they completed/not completed together
 
 For example, when we transfer money from one account to another, we need to make it one logical transaction:
@@ -22,35 +22,51 @@ END TRANSACTION;
 ```
 
 Transaction have these main commands:
-begin
-end / commit
-rollback
+- begin
+- end / commit
+- rollback
 
-## Which properties transaction have?
+## ACID (Properties of transaction)
 
 **Atomicity** - means that operation (transaction) can be fully done or rollback'ed, yes or no, 1 or 0
 
 **Consistency** - it's logical property. In previous example with bank transfer consistency means, that total amount of money will be the same after transaction. It's like law of conservation of energy
 
 **Isolation** - it means, that each transaction independent of other transactions (see Isolation levels).
-It'ssimilar to **Serializibility**, that means, that transactions runs like that runs serializably (one after one), even in real life they run concurrently
+It's similar to **Serializibility**, that means, that transactions runs like that runs serializably (one after one), even in real life they run concurrently. <br>
+Isolation can be implemented in different ways, it's up to rdbms developers. Here some examples of **Isolation Levels**, from weakest, to strongest (approximately)
+
+	- **Read Commited**: have two main parts 
+		- no dirty reads: other transactions don't read any uncommited writes
+		- no dirty writes: other transaction, that wants to write need to wait until fist transaction commits
+
+	- **Snapshot Isolation Level**: whtn each transaction reads their own version of data, that commited when that transaction started
+
+	- **Serializability**: Most strict isolation level. Guarantees that result of concurrenttly executed transactions will be the same as if they are executed serially (one by one). But implement that hardest level of isolation can down speed.
+
+	Serializibility implemented mainly in one of that ways:
+		- real isolation: when you have not so much transactions, and all of them fast you can just evaluate transactions really one by one
+		- 2 phased commit: quite slow
+		- Serializable Snapshot Isolation
 
 **Durability** - means, that if we get proof of end of transaction, that means, that there is can't happen something, to rollback that transaction, and it stored in database forever
 
 ## CAP, BASE
 
-- `Consistency` 
-- `Availiability`
-- `Partitionability`
+- Consistency
+- Availiability
+- Partitionability
 
 Three of them almost impossible simaltaniously, and usually all picks Availiability and Partitionability
 So there BASE approach:
 
-- `Basically availilale` - In the end query will return result (but it can takes time)
-- `Soft State` - All works without you
-- `Eventually Consistent` - Eventual consistency
+- Basically availilale - In the end query will return result (but it can takes time)
+- Soft State - All works without you
+- Eventually Consistent - Eventual consistency
 
 ## Consystency types:
+
+**Isolation** is described in the context of transactions which consists of one or more read and write operations. On the other hand, **Consistency** is described in the context of atomic read or write operations.
 
 - **Strict Consistency** - Full Consistency. Hard to achieve
 - **Sequental consistency** - Guarantee, that latest processes will read/write newest value
@@ -60,19 +76,6 @@ So there BASE approach:
 - **Eventual Consistency** - Means, that eventually (after some time) all data will be in consistent state 
 - **Release Consistency** - pass
 - **Entry Consistency** - pass
-
-## Isolation Levels
-
-- **Read Commited**: have two main parts 
-	- no dirty reads: other transactions don't read any uncommited writes
-	- no dirty writes: other transaction, that wants to write need to wait until fist transaction commits
-
-- **Snapshot Isolation Level**: whtn each transaction reads their own version of data, that commited when that transaction started
-
-- **Serializability**: based on one of three approaches:
-	- real isolation: when you have not so much transactions, and all of them fast you can just evaluate queries one by one
-	- 2 phased commit: quite slow
-	- Serializable Snapshot Isolation
 
 ## What is Cursor. Types of Cursors
 
@@ -104,17 +107,17 @@ No-SQL examples:
 
 ## How JOIN works
 
-- Nested Loop:
+- **Nested Loop:**
 For each row of the left table, iterate over whole right table
 it's O(NxM)
 
-- Merge Join:
+- **Merge Join:**
 At first we need to sort both tables, and after that
 for first row of left table find all rows in right table and stops (remember place, where stop)
 For second row of left table loop started from that place, where stopped.
 So it's O(N+M)
 
-- Hash Join:
+- **Hash Join:**
 At first we need to create hashmap from smallest table.
 Then for each row from biggest table we calculate hash() and go to the hasmap.
 so it's O(N)
@@ -123,10 +126,9 @@ so it's O(N)
 
 ### What is Index
 
-**Index** - it's different data structure, that can perform select, but slow insert and update
+**Index** - it's a separate data structure, that can perform select, but slow insert and update
 
-In a nutshell - index it's like Table of contents for book. When you need particular chapter you don't need to fullscan all book.
-You can just look at TOC and see in which page range needed chapter are stored
+In a nutshell - index it's like Table of contents for book. When you need particular chapter you don't need to fullscan all book. You can just look at TOC and see in which page range needed chapter are stored
 
 Indexes can be clustered and nonclustered (In MSSQL, for example):
 
@@ -154,10 +156,19 @@ B-Tree (default), Hash, Generalized Inverted Index (GIN), Generalized Search Tre
 - You should not use indexes on tables that face large and frequent batch UPDATE and INSERT operations
 - You should not use indexes on columns that have many NULL values
 - You should not use indexes on columns that are frequently edited
+- When column have small selectivity (too little unique values, or even worse - when we have disbalance)
+
+### When it's better not to have indexes, instead of having them?
+
+In a nutshell, that's how process looks like:
+We go to the index, iterate over them, and go to particular data cells, with links, that mentioned in index.
+
+In that case, if, for example, we have table with our employees, and if we quite old company, that means, that flag `active_employee` will be on 90% filled with `False`. So if we want to select some of old employee, and if we have that field indexed, so we need to get to index and select 90% of rows with links in index. That whole "go to index -> find value -> go to link - > find real value" will be more time consuming, than simple fullscan in actual data
+
 
 ### Why you can't just create as many indexes as possible, if then so great?
 
-- Because each index should be rebuild after any changes in table, which slow writes in database
+Because each index should be rebuild after any changes in table, which slow writes in database
 
 ## Rowstore and ColumnStore
 
@@ -317,3 +328,4 @@ Two main scalability options:
 ### Not sources of that page, but good sources in general
 
 - Designing Data-Intensive Applications (Martin Kleppmann)
+- https://seanhu93.medium.com/difference-of-isolation-and-consistency-cc9ddbfb88e0#:~:text=So%20what%20is%20the%20difference,clients%20of%20a%20distributed%20system.

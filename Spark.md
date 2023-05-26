@@ -28,25 +28,25 @@ Sparks works on RDD, instead of HDFS
 It can be implemented over RAM, or HDFS, or any other source
 
 RDD can be :
-	- 1/2 dimensiinal - dataframe/dataset
-	- can be partitioned by different servers 
-	- Operation over RDD doesn't change RDD, they create new ones!
-	- All operations over RDD can be imagined as DAG (graph)
+- 1/2 dimensiinal - dataframe/dataset
+- can be partitioned by different servers 
+- Operation over RDD doesn't change RDD, they create new ones!
+- All operations over RDD can be imagined as DAG (graph)
 
 **Lineage** - it's RDD, that store chain of operations over RDD for each (!) RDD. it's DAG, in a nutshell.
 If something get wrong, with some RDD, whle lineage restarts to that RDD
 
 **RDD Transformations**:
-	- **Narrow**:
-		When each partition of parent RDD used only once (and no more) to create child partition:
-		A1 -> B1
-		A2 -> B2
-		A3 -> B3
-		That sort of dependencies let execute pipeline (lineage) on one node, without combining results
-		Example: filter operation
-	- **Wide**:
-		When each partition of parent RDD used by many child paririons
-		Example: groupbykey operation
+- **Narrow**:
+	When each partition of parent RDD used only once (and no more) to create child partition:<br>
+	A1 -> B1<br>
+	A2 -> B2<br>
+	A3 -> B3<br>
+	That sort of dependencies let execute pipeline (lineage) on one node, without combining results<br>
+	Example: filter operation<br>
+- **Wide**:
+	When each partition of parent RDD used by many child paririons<br>
+	Example: groupbykey operation<br>
 
 So, because of that dependencies Scheduler make execution plan
 
@@ -114,11 +114,12 @@ Whole lineage started to compute only when Action operator called
 
 ## Questions
 
-- Difference between persist and cache?
-Cache() and persist() both the methods are used to improve performance of spark computation. These methods help to save intermediate results so they can be reused in subsequent stages.
-The only difference between cache() and persist() is ,
-Cache technique we can save intermediate results in memory only
-Persist () we can save the intermediate results in 5 storage levels(MEMORY_ONLY, MEMORY_AND_DISK, MEMORY_ONLY_SER, MEMORY_AND_DISK_SER, DISK_ONLY).
+- Difference between persist and cache?<br>
+Cache() and persist() both the methods are used to improve performance of spark computation.<br>
+These methods help to save intermediate results so they can be reused in subsequent stages.<br>
+The only difference between cache() and persist() is:<br>
+**Cache** technique we can save intermediate results in memory only
+**Persist** we can save the intermediate results in 5 storage levels: MEMORY_ONLY, MEMORY_AND_DISK, MEMORY_ONLY_SER, MEMORY_AND_DISK_SER, DISK_ONLY).
 
 - Hpw to create User defined functions?
 ```python

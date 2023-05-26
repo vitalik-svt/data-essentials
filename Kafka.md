@@ -20,14 +20,14 @@ Topics phisically splitted for partitions, which is regular log files
 ## Reliability
 
 Kafka guarantee that no one message will be lost, because of:
-`replication_factor` - it's number of partition replication (to different brokers)
+**replication_factor** - it's number of partition replication (to different brokers)
 
 Each partition have their own leader, and Produce/Consume messages got through that leader.
 Followers only check leader sometimes and ketchup changes from leader
 
-`min.insync.replicas` - number of replicas that can be syncronized
+**min.insync.replicas** - number of replicas that can be syncronized
 
-`acks` - 0/1/-1(all) it's number of confirmation from broker, that he getting message (no confirmation, at least from leader, and from all)
+**acks** - 0/1/-1(all) it's number of confirmation from broker, that he getting message (no confirmation, at least from leader, and from all)
 
 
 ## Produce 
