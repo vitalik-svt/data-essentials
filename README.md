@@ -38,8 +38,10 @@ For purposes of convenience, uniformity and automatically generated table of con
 * Each heading should starts with Capital letter
 * Place Links and Sources for each file in the footer of each file
 
-Table of contents will contain only first (H1) and second headings (H2) level, where first - it's actually file name.<br>
-And second level - it's links for actual main topics in file.<br>
+Table of contents will contain only first (H1) and second headings (H2) level:
+- first: it's actually just file name.<br>
+- second: it's links for actual main topics in file.<br>
+
 Make sure, that there is not too less and not too much second level topics, in order to make table of Contents convinient to use.<br>
 Someday it may be needed to rebalance files (split them, for example), when it will be too much info about some topics in one file.
 
