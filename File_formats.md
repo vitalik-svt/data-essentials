@@ -58,7 +58,7 @@ it's schema on-write.
 
 	Or you can use different file for each column. Also, it's neccessary to undeerstand offset (~index) of each elemnt in file
 
-	- Mixed. Parquet use that type.
+	- Hybrid. _Parquet use that type_
 
 	That means, that you have both columns (horizontal) and columns(vertical) partitioning.
 
@@ -104,5 +104,35 @@ it's schema on-write.
 		- Run-length encoding + bit-packing + dictionary compression
 		- Assumes duplicate and repeated values
 
+			example data:
+			a, b, c, a, a, a, f, f, b, a
+
+			dictionary-compression stage:
+			_it's just creation of hashmap_
+			a: 0, b:1, and so on
+
+			so data will be
+			0, 1, 2, 0, 0, 0, 6, 6, 1, 0
+
+			RLE+Bit packaging stage:
+			0, 1, 2, (3, 0), (2, 6), 1, 0
+
+	_Note1:_ beacuse of all that metadata things stored in file, and rowgroups, you shoukd avoid use small files
+	_Note2:_ Also avoid to use hufe files, because that means huge footer, but algorythms for foorer managment not optimized for speed.
+	_Note3:_ So, size of 1gb is ok
+
+	### Conclusion about Parquet:
+
+	- Redused I/O
+		- because of size (compression to RLE_Dictionary)
+		- because of avoioding read irrelevant data (based on metadata min max and dictionary filtering)
+	- Redused overhead
+		- if you avoid using small files
+
+
+## Links and literature
+### Not sparticulat sources of that page, but good sources in general
+
+- https://www.youtube.com/watch?v=1j8SdS7s_NY
 
 
