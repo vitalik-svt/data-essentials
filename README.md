@@ -1,9 +1,9 @@
 # de-essentials
 
 ## Overview
-Questions and tasks for Data Engineers 
-Can be used for interview preparation (on both sides)<br/>
-Made by non-native speaker (and non-native data engineer)<br/>
+Repo contains info about core Data Engineering concepts.<br/>
+Can be used for interview preparation (on both sides).<br/>
+Made by non-native speaker (and non-native data engineer, huh).<br/>
 This set of tasks and questions doesn't claim to be complete or correct, you have your own head on your shoulders.<br/><br/>
 
 ## Contribution
