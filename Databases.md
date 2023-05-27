@@ -174,19 +174,22 @@ Because each index should be rebuild after any changes in table, which slow writ
 
 ### Rowstore
 
-Data stored by rows, so DBMS iterate over rows and handle all the data
+Data stored by rows, so DBMS iterate over rows and handle all the data.
+Mostly used for operations, that involves whole raw
 
 **Pro**:
-	- It's cool for OLTP, because it's easy to append data at the end: you write in only one file (in general)
+	- It's cool for __OLTP__, because it's easy to append data at the end: you write in only one file (in general)
 **Contra**:
 	- In querits you need to handle all row with you, that fill memory
 
 ### Columnstore
 
-Data stored by colummns, so RDBMS iterate over rows and handle all the data
+Data stored by colummns, so RDBMS iterate over rows and handle all the data.<br>
+Nice to have, when most of your operations involve not whole rows, but some columns only
+
 
 **Pro**:
-	- It's cool for OLAP, because generally you select only some columns, so RDMBS need to take care only of that particular columns, and don't store additional data
+	- It's cool for __OLAP__, because generally you select only some columns, so RDMBS need to take care only of that particular columns, and don't store additional data
 	- It's simple to compress columns, for example you can compress column AAAAAAABBCCAAA to A7B2C2A3  (and then apply BitMap, for example)
 **Contra**:
 	- It takes more time to insert data, becaues you need to insert data in all columns files
