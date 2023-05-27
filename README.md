@@ -1,4 +1,4 @@
-# data-essentials
+# Data essentials
 
 ## Overview
 Repo contains info about core Data Engineering concepts.<br/>
