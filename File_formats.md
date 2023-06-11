@@ -10,7 +10,7 @@ Let's call it schema on-read.
 ## Semi-structured
 
 Not really contains the schema, but it's the steps in the right direction.<br>
-That data formats have some rules to create file, so it helps, but they are still schema no-read.
+That data formats have some rules to create file, so it helps, but they are still **schema on-read**.
 
 - csv/tsv/psv
 - xml
@@ -23,6 +23,7 @@ it's schema on-write.
 
 - **Avro**
 
+pass
 
 - **Parquet**
 
