@@ -8,7 +8,7 @@ Me, personnaly divide review to three parts:
 1. **Is code working as it is?**
 	*In standalone environment. There i need to check all logic inside functions and so on. It's similar to unit-testing, and in test covered production maybe not so nessecary, because we assume, that code tested before pull request*
 
-2. Will code work in production environment? 
+2. **Will code be working in production environment?**
 	*How that code will interact with other things in production?*
 
 	- Is the pipeline idempotent? 
@@ -251,3 +251,28 @@ def get_content(entry):
 def get_content(entry):
     yield from entry.get_blocks()
 ```
+
+## System Design
+
+- You drive the interview!
+- You should clarify all requirements in the start!
+
+    dev part:
+    - How many users/data in the system?
+    - is that system for company, or regional, global?
+    - is data availiability crucial?
+    - what about data latency?
+    - OLTP/OLAP share
+    - what features should be implemented?
+    
+    data part:
+    - what is source of data?
+    - Is it need to be batch or streaming? with which frequency, if batch?
+    - size of data?
+    - is it migration to cloud, or new system? 
+    - who will use that system? BA, DS? 
+
+- You should continiously ask, if interviewer understand your way of thinkning!
+
+
+
