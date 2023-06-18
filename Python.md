@@ -217,10 +217,10 @@ In that case they stored, let's say, in the same cell:
 
 ### Search in sequences
 
-O(1) to find some element by key in Sets and Dicts
-O(N) to find element in List and Tuples
-O(1) to find element by index in Tuple
-O(N) to find element by index in List
+- O(1) to find some element by key in Sets and Dicts
+- O(N) to find element in List and Tuples
+- O(1) to find element by index in Tuple
+- O(N) to find element by index in List
 
 ## Functions
 
@@ -501,6 +501,48 @@ Processing - it's mostly for CPU-comsuming operations, but multithreading - it's
 - `dumps` - json -> string
 - `load` - file -> json
 - `loads` - string -> json
+
+## Linux commands
+
+### File system
+
+- **/bin** - user binary files
+- **/sbin** - System binaries
+- **/etc** - Config files 
+- **/dev** - Device files
+- **/proc** - Process files
+- **/var** - Variable files 
+- **/tmp** - Temporary files
+- **/usr** - User program 
+- **/home** - Home directory
+- **/boot** - Boot files 
+- **/lib** - System libraries
+- **/opt** - Optional app
+- **/mnt** - Mount directory
+- **/media** - Media
+- **/srv** - Service data
+
+### Most used commands
+
+- **ls** - list of all directory components. `ls -a` shows all files
+- **cd** - change directory. `cd yourdirthatinparticulardir`
+- **mkdir** - make directory. `mkdir newdir`
+- **rm** - remove files and directories 
+- **mv** - move/rename
+- **cp** - copy
+- **pwd** - print working directory
+- **chmod** - change files/dirs permissions
+- **sudo** - execute command as superuser
+- **chown** - change owner
+- **cat** - concatenate and show files
+- **grep** - seeking info in files
+- **top** - show system process
+- **ps** - display running processes
+- **tar** - create/extract archive files
+- **kill** - terminate process
+- **ping** - test network. `ping www.google.com`
+- **du** - shows disk usage. `du -ha --max-depth=1` shows usage in dirname for all files only 1st level of nestedness
+
 
 
 ## Links and literature

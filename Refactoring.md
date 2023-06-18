@@ -1,7 +1,7 @@
-# Review_Refactoring
+# Refactoring
 
 
-## Review tips
+## Review algorithm
 
 Me, personnaly divide review to three parts:
 
@@ -32,11 +32,14 @@ Me, personnaly divide review to three parts:
 	*Can code be cleaner, with the same functionality?*
 
 
+
 ## Refactoring tips
 
-0. Use type hints everywhere!
+0. **Use type hints everywhere!**
 
-0. Use Black for formatting!
+0. **Split functionality to functions for convinient maintaining and testing**
+
+0. **Add testing wherever you can**
 
 1. Merge nested if-statements:
 
@@ -252,6 +255,7 @@ def get_content(entry):
     yield from entry.get_blocks()
 ```
 
+
 ## System Design
 
 - You drive the interview!
@@ -274,5 +278,6 @@ def get_content(entry):
 
 - You should continiously ask, if interviewer understand your way of thinkning!
 
-
+- https://github.com/donnemartin/system-design-primer
+- Youtube channel "system design interview"
 

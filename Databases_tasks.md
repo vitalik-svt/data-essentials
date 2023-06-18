@@ -1,4 +1,4 @@
-# SQL_tasks
+# Databases_tasks
 
 ## Which query returns biggest number:
 
