@@ -21,7 +21,7 @@ de-essentials<br/>
 ├── Python     		(general info about python (DE related))<br/>
 ├── Python_tasks	(some coding tasks)<br/>
 ├── Databases		(general info about databases)<br/>
-├── SQL_tasks		(some sql tasks)<br/>
+├── Databases_tasks		(some sql tasks)<br/>
 ├── ...<br/>
 └── README<br/>
 
