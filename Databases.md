@@ -26,43 +26,52 @@ Transaction have these main commands:
 - end / commit
 - rollback
 
+## Basic Data base data types
+
+**Hash Index**
+
+pass
+
+**SS-Table**
+
+pass
+
+**LSM-Tree**
+
+pass
+
+**B-Tree**
+
+pass
+
+
 ## ACID (Properties of transaction)
+
 
 **Atomicity** - means that operation (transaction) can be fully done or rollback'ed, yes or no, 1 or 0
 
 **Consistency** - it's logical property. In previous example with bank transfer consistency means, that total amount of money will be the same after transaction. It's like law of conservation of energy
 
 **Isolation** - it means, that each transaction independent of other transactions (see Isolation levels).
-It's similar to **Serializibility**, that means, that transactions runs like that runs serializably (one after one), even in real life they run concurrently. <br>
 Isolation can be implemented in different ways, it's up to rdbms developers. Here some examples of **Isolation Levels**, from weakest, to strongest (approximately)
 
-	- **Read Commited**: have two main parts 
-		- no dirty reads: other transactions don't read any uncommited writes
+	- **Read Commited**: have two main parts:
+		
+		*Transaction can read only commited on changes, by the time that transaction started*
+		
+		- no dirty reads: other transactions don't read any uncommited changes
 		- no dirty writes: other transaction, that wants to write need to wait until fist transaction commits
 
-	- **Snapshot Isolation Level**: whtn each transaction reads their own version of data, that commited when that transaction started
+	- **Snapshot Isolation Level/repeatable read**: each transaction reads their own version of data, that commited when that transaction started
 
 	- **Serializability**: Most strict isolation level. Guarantees that result of concurrenttly executed transactions will be the same as if they are executed serially (one by one). But implement that hardest level of isolation can down speed.
 
 	Serializibility implemented mainly in one of that ways:
-		- real isolation: when you have not so much transactions, and all of them fast you can just evaluate transactions really one by one
-		- 2 phased commit: quite slow
-		- Serializable Snapshot Isolation
+		- sequential execution it's real isolation: when you have not so much transactions, and all of them fast you can just evaluate transactions really one by one
+		- 2PL (2 phased lock): Transaction block some rows (by some predicat or something), and let it go after commit. It's quite slow, because in insert/update operations it's practicallly a sequential execution 
+		- SSI (Serializable Snapshot Isolation): It use optimistic approach (while 2PL use pessimistic one). This approach based on Shapshot Isolation, but we also continously check transaction id (monotonically increasing value), and right before commiting transaction, transaction manager check, if there is transaction with bigger id commits some changes. If yes, our transaction should be rollbacked and rerunned
 
 **Durability** - means, that if we get proof of end of transaction, that means, that there is can't happen something, to rollback that transaction, and it stored in database forever
-
-## CAP, BASE
-
-- Consistency
-- Availiability
-- Partitionability
-
-Three of them almost impossible simaltaniously, and usually all picks Availiability and Partitionability
-So there BASE approach:
-
-- Basically availilale - In the end query will return result (but it can takes time)
-- Soft State - All works without you
-- Eventually Consistent - Eventual consistency
 
 ## Consystency types:
 
@@ -77,12 +86,27 @@ So there BASE approach:
 - **Release Consistency** - pass
 - **Entry Consistency** - pass
 
+## CAP, BASE
+
+it's concepts of how distributed system (not exactly database) should be made 
+
+- Consistency
+- Availiability
+- Partitionability
+
+Three of them almost impossible simaltaniously, and usually all picks Availiability and Partitionability
+So there BASE approach:
+
+- Basically availilale - In the end query will return result (but it can takes time)
+- Soft State - All works without you
+- Eventually Consistent - Eventual consistency
+
 ## What is Cursor. Types of Cursors
 
 Area in memory, when result of query stored.
 Can be client and server cursors.
 
-## SQL vs No-SQL
+## SQL vs NoSQL
 
 by SQL it mostly means relational rowstored databases
 
@@ -144,7 +168,7 @@ Indexes can be implemented with different data structures
 - **B-Tree** - Most used type at that time. 
 - **Hash Index** - Mostly used for key:value storage
 - **SS-Table** - tbh i don't get that fully. need to be filled later
-- **LSM-Tree** -tbh i don't get that fully. need to be filled later
+- **LSM-Tree** - tbh i don't get that fully. need to be filled later
 
 ### PostgreSQL Types of Indexes:
 
@@ -170,7 +194,7 @@ In that case, if, for example, we have table with our employees, and if we quite
 
 Because each index should be rebuild after any changes in table, which slow writes in database
 
-## Rowstore and ColumnStore
+## RowStore and ColumnStore
 
 ### Rowstore
 
@@ -194,7 +218,7 @@ Nice to have, when most of your operations involve not whole rows, but some colu
 **Contra**:
 	- It takes more time to insert data, becaues you need to insert data in all columns files
 
-## SQL Questions
+## SQL basic questions
 
 - Difference between Truncate and Delete: Delete delete row by row and log that. Truncate just drop whole table and recreates it
 - What languages SQL has?: DDL (definition: create, alter), DML (manipulation: select), DCL (control: grant)
@@ -332,7 +356,7 @@ Two main scalability options:
 ### Unstructured
 
 Fully no schema, so you need to parse it somehow.<br>
-Let's call it schema on-read.
+It's schema on-read.
 
 - txt
 
