@@ -278,6 +278,8 @@ def get_content(entry):
 
 - You should continiously ask, if interviewer understand your way of thinkning!
 
+### links
+- https://www.youtube.com/watch?v=Be7INI_U6GY
 - https://github.com/donnemartin/system-design-primer
 - Youtube channel "system design interview"
 
