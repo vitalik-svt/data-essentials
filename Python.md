@@ -381,6 +381,14 @@ it returns one x at a time, and don't stored anything else, so it can be used fo
 
 ## Classes, Objects
 
+### OOP Concepts
+
+- **Class** - it's blueprint for creating objects, encapsulating data and methods that can operate on that data
+- **Object** - it's an instance of class
+- **Encapsulation** - Bundling data and methods operating on that data within a class, actually. It's like API
+- **Inheritance** - Allows a class to inherit attributes and methods from another class
+- **Polymorphism** - enables one interface or method to be used for different data types and classes
+
 ### Underscores
 
 - `_foo`- Only a convention. A way for the programmer to indicate that the variable is private (whatever that means in Python).

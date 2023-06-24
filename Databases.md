@@ -26,25 +26,6 @@ Transaction have these main commands:
 - end / commit
 - rollback
 
-## Basic Data base data types
-
-**Hash Index**
-
-pass
-
-**SS-Table**
-
-pass
-
-**LSM-Tree**
-
-pass
-
-**B-Tree**
-
-pass
-
-
 ## ACID (Properties of transaction)
 
 
@@ -62,7 +43,15 @@ Isolation can be implemented in different ways, it's up to rdbms developers. Her
 		- no dirty reads: other transactions don't read any uncommited changes
 		- no dirty writes: other transaction, that wants to write need to wait until fist transaction commits
 
-	- **Snapshot Isolation Level/repeatable read**: each transaction reads their own version of data, that commited when that transaction started
+		It can be implemented by setting block for rows, that modified by transaction, so next transactions need to wait for their turn to modify some rows, when block will be released.
+		Also, it will work for dirty reads: in case, when transaction try to read blocked row, she need to get pre-blocked state of that row
+
+	- **Snapshot Isolation Level/Уepeatable read**: each transaction reads their own version of data, that commited when that transaction started
+
+		It can be implemented by:
+		- storing few versions of each data, which called MVCC (multiversion concurrency control)
+		- each transaction must have monotoniously increased id (txid)
+		- each piece of data should hold store metadata with information about created transaction, deleted, modified, so based on that information each transaction can understand: can it "see" that data, or not
 
 	- **Serializability**: Most strict isolation level. Guarantees that result of concurrenttly executed transactions will be the same as if they are executed serially (one by one). But implement that hardest level of isolation can down speed.
 
@@ -161,14 +150,37 @@ Indexes can be clustered and nonclustered (In MSSQL, for example):
 
 PostgreSQL doesn't have that concepts: all data stored in heaps, so all indexes are non-clustered.
 
-### Types of Indexes
+It's more simpler to consider indexes as separate from data structure things, so clustered index - it's not really common thing
 
-Indexes can be implemented with different data structures
+### Basic Data base index types
 
-- **B-Tree** - Most used type at that time. 
-- **Hash Index** - Mostly used for key:value storage
-- **SS-Table** - tbh i don't get that fully. need to be filled later
-- **LSM-Tree** - tbh i don't get that fully. need to be filled later
+**B-Tree (Balanced)** - Most used type at that time. 
+
+pass
+
+**Hash Index** - Mostly used for key:value storage
+
+It's a hasmap, that stored somewhere in ram (for fast response).
+Let's assume, that our DB it's simple file that store some key:value, and we only append new values to the end of the file
+
+So our file looks like:
+data:		 key1: 'value1', key2: 'value2', key3: 'value3'... 
+position:    12345678910111213141516171819202122232425262728...
+
+And in that case we need to store somewhere hashmap, which will contain key and offset (in bytes or symbols for simplicity)
+key1: 1
+key2: 13
+etc
+
+So when we need to find some value, we just scan our hasmap and go directly to needed offset
+
+**SS-Table**
+
+pass
+
+**LSM-Tree**
+
+pass
 
 ### PostgreSQL Types of Indexes:
 
@@ -217,43 +229,6 @@ Nice to have, when most of your operations involve not whole rows, but some colu
 	- It's simple to compress columns, for example you can compress column AAAAAAABBCCAAA to A7B2C2A3  (and then apply BitMap, for example)
 **Contra**:
 	- It takes more time to insert data, becaues you need to insert data in all columns files
-
-## SQL basic questions
-
-- Difference between Truncate and Delete: Delete delete row by row and log that. Truncate just drop whole table and recreates it
-- What languages SQL has?: DDL (definition: create, alter), DML (manipulation: select), DCL (control: grant)
-- Can you join with Null?: No, Null - not compatible, so Join Null on Null will be Null, so result will not appeared
-- Difference between Union and Union ALL: Union drop duplicates in result query
-- What types of window functions do you know?
-	
-	- lag(): previous row
-	- lead(): next row
-	- rownumber: just add rows number counter
-	- rank: if there two rows with the same number, next number will be skipped
-	- dense rank: no numbers skipped
-	- min, max, etc.
-
-- What is order of opertation:
-	1. From
-	2. Join
-	3. Where
-	4. Group by
-	5. Having
-	6. Select + Window functions
-	7. Order by
-	8. Limit
-
-- What is normaliztion, which advantages it brings: Normalization in SQL is the process of organizing data to avoid duplication and redundancy. Some of the advantages are:
-	- Better Database organization
-	- More Tables with smaller rows
-	- Efficient data access
-	- Greater Flexibility for Queries
-	- Quickly find the information
-	- Easier to implement Security
-	- Allows easy modification
-	- Reduction of redundant and duplicate data
-	- More Compact Database
-	- Ensure Consistent data after modification
 
 
 ## Execution plan, Statistics (PostgrSQL)
@@ -349,7 +324,7 @@ Two main scalability options:
 	Process, that distributes data by some key (random, preferrably), on smaller parts, so all nodes can perform query
 
 - Partitions:
-	Partition by monthes
+	Partition by monthes (for example)
 
 ## Files
 

@@ -54,14 +54,49 @@ It's like Kappa, but based on delta lake, so it's much more simpler to reprocess
 
 	Delta lake has optimistic concurrency control, so when two transactions start manipulate with data, based on same log id file, when transaction finished, it need to check, if there their base log id still latest. If not - transaction reprocess it, based on new transaction log
 
+## Inmon
+
+It's approach, where you at first create normalized tables, and only after you create needed dashboards
+
+pro:
+- you can create new dashboards easily from already prepared data
+
+contra:
+- some dashboards can overlap information (no single source of truth)
+
+## Kimpball
+
+In this approach you need at first to understand, which dashboards do you need, and after that make ETL processes exactly for them
+
+pro:
+- single source of truth
+
+contra:
+- you need to implement full etl process for each dashboard
 
 ## Data Vault
 
-todo
+Killer-feature of that approach - it's to separate data and relations (so you will not use PK-FK relations between fact tables)
+
+You have this objects:
+- Hub: contains only business object. Key can be business key, or surrogate key (hash from business)
+- Sattelite: contains information about object (you can create as many satellites, as you want). can be linked only to hub
+- Link: contains relations between Hubs
+
+Also, in Data Vault paradigm Link-tables can have their own satellite (to store facts)
+
 
 ## Anchor Model
 
-todo
+Pretty similar to Data Vault, but it's on hard-mode
+
+You have this objects:
+- Anchor: contains only business object. And contains only surrogate key. Business key it's just an attribute
+- Attribute: contains information about object, and you should create table for each attribute
+- Tie: contains relations between Anchors
+- Knot: it's object for Anchor+Attribute, but i don't sure, that you want to use it.
+
+And in AM you can't link Attributes tables to Tie
 
 
 ## Clouds

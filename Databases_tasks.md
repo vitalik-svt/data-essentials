@@ -1,5 +1,42 @@
 # Databases_tasks
 
+## SQL basic questions
+
+- Difference between Truncate and Delete: Delete delete row by row and log that. Truncate just drop whole table and recreates it
+- What languages SQL has?: DDL (definition: create, alter), DML (manipulation: select), DCL (control: grant)
+- Can you join with Null?: No, Null - not compatible, so Join Null on Null will be Null, so result will not appeared
+- Difference between Union and Union ALL: Union drop duplicates in result query
+- What types of window functions do you know?
+    
+    - lag(): previous row
+    - lead(): next row
+    - rownumber: just add rows number counter
+    - rank: if there two rows with the same number, next number will be skipped
+    - dense rank: no numbers skipped
+    - min, max, etc.
+
+- What is order of opertation:
+    1. From
+    2. Join
+    3. Where
+    4. Group by
+    5. Having
+    6. Select + Window functions
+    7. Order by
+    8. Limit
+
+- What is normaliztion, which advantages it brings: Normalization in SQL is the process of organizing data to avoid duplication and redundancy. Some of the advantages are:
+    - Better Database organization
+    - More Tables with smaller rows
+    - Efficient data access
+    - Greater Flexibility for Queries
+    - Quickly find the information
+    - Easier to implement Security
+    - Allows easy modification
+    - Reduction of redundant and duplicate data
+    - More Compact Database
+    - Ensure Consistent data after modification
+
 ## Which query returns biggest number:
 
 ```sql
