@@ -373,3 +373,25 @@ Kafka commit reading, and there implemented two alghorithms of commits:
 - ManualCommit (at least once) - but you can duplicate messages
 
 Exact once not implemented, but Kafka lets you do it yourself
+
+## DBT
+
+pass
+
+## Terraform 
+
+### General interaction sequence
+
+- terraform init - *initializes project with terraform files. It's first command to do*
+- terraform plan - *planning changes. Showing what will be done*
+- terraform apply - *actually applies changes to real world*
+- terraform destroy - *destroy all instances, created by terraform*
+
+Backend of the terraform can be stored:
+
+- locally: on the pc (ok for playground)
+- remote: in terraform cloud (free up to 5 users)
+- remote: selfhosted (in S3 + DynamoDB (in cloud, for instance))
+
+
+
