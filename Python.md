@@ -4,6 +4,36 @@ That document based on https://github.com/yakimka/python_interview_questions
 
 ## Built-in Sequences, Objects, Functions
 
+### Data types in python:
+
+- mutable
+    - list
+    - dict
+    - set
+- immutable
+    - tuple
+    - string
+    - int/float
+    - frozenset
+    - bool
+
+### What is difference between '==' and 'is'?
+
+- '==' compare operands by value
+- 'is' compare operands by addresses in memory
+
+
+### How arguments sets in functions?
+
+- mutable arguments transmitted in function by link on object
+- immutable objects transfmitted by value 
+
+There is two type of arguments in Python: positional and keyword (named) arguments.
+Positional arguments must be included in the correct order. Keyword arguments are included with a keyword and equals sign. 
+
+`*args` (tuple) - argument, that can contain unknown amount of positional arguments
+`**kwargs` (dict) - same, but for keyword arguments
+
 ### What is sequence
 
 Due to duck-typing in python - sequence is object, that supports this methds:
@@ -55,9 +85,9 @@ And if sequence is mutable (list), they will probably support this operations
 ### Strings in python
 
 in Python 3 there is only regular unicode string, that can be represented in different ways:
-r'string' - raw 
-u'string' - unicode
-b'string' - bytes
+- r'string' - raw 
+- u'string' - unicode
+- b'string' - bytes
 
 Strings are immutable, so you can't remove or change something. So, whtn you format, concatenate or replace something in string, that function bring back to you new string (new object with different id)
 
@@ -73,19 +103,16 @@ Some useful operations with strings:
 
 **list** 
 Mutable object
-List containts links on particular object (can be different types) and link to next object.
-So, when you add some element to the end of the list, for example.
-Last element for now just accept the link for added element.
 
-it's like
-id(123) -> id(345) -> id(456) 
-
-**Tuple**
-Immutable object
+Particulary in python Lists are not linked lists. They are Mutable arrays (C-like)
 Created in that particular time when declared, and stored in continuous place in memory.
 So it's good for calling elements by index (it's O(1))
 
-id(123), id(124), id(125)
+When we left only few empty places, lists copied in another area of memory, simoultaniously with increasing size
+
+**Tuple**
+Immutable object
+Under the hood it's the same as list, but immutable
 
 **Array**
 it's C-type array.
@@ -292,7 +319,11 @@ So when you define variable with object:
 
 Python creates object, and than **assigns** it with variable
 
-Aaand we slightly go to **copy** and **deepcopy** functions, which can be useful to know while working with mutable objects
+### copy() and deepcopy()
+
+`from copy import copy, deepcopy`
+
+Aaand we slightly go to **copy** (aka **shallow copy**) and **deepcopy** functions, which can be useful to know while working with mutable objects
 
 `b = a.copy()`
 returns shallow copy of b and assign it with a
@@ -318,6 +349,7 @@ Implemented methods:
 `__iter__()` - returns iterator for given object
 OR
 `__getitem__()` - old version, or something
+
 
 Iterable can be used in for loop, or other functions, that expects sequence (sum, min, max, map)
 
@@ -389,10 +421,10 @@ it returns one x at a time, and don't stored anything else, so it can be used fo
 - **Inheritance** - Allows a class to inherit attributes and methods from another class
 - **Polymorphism** - enables one interface or method to be used for different data types and classes
 
-### Underscores
+### Underscores and access modifiers
 
-- `_foo`- Only a convention. A way for the programmer to indicate that the variable is private (whatever that means in Python).
-- `__foo`- This has real meaning. The interpreter replaces this name with `_classname__foo` as a way to ensure that the name will not overlap with a similar name in another class.
+- `_foo`- Only a convention. A way for the programmer to indicate that the variable is **private**
+- `__foo`- This has real meaning. The interpreter replaces this name with `_classname__foo` as a way to ensure that the name will not overlap with a similar name in another class. So it's like **protected** attribute
 - `__foo__`- Only a convention. A way for the Python system to use names that won't conflict with user names.
 
 ### Dunder (Magic) methods
@@ -403,16 +435,164 @@ it returns one x at a time, and don't stored anything else, so it can be used fo
 - `__iter__`- returns iterator
 - etc.
 
-### Class vs Static Methods
+### Three types of Methods in class 
 
-defined by decorators:
-@classmethod and @staticmethod
+1. Object methods
+
+Knows about object state, take *self* argument and modified only object itself
+
+```python
+
+class SomeClass:
+
+    def object_method(self):
+        pass
+```
+
+2. Class methods
+can be defined by decorator @classmethod
+
+Knows about whole class, take *cls* argumant and modified some things in whole class
+
+```python
+
+class SomeClass:
+
+    @classmethod
+    def class_method(cls):
+        pass
+```
+
+3. Statis methods
+can be defined by decorator @staticmethod
+
+Knows nothing neither about object ot class. Can be caled without creating an object, from class directly.
+Not modifiyng anything. Can be used for some general things, that make sense to put into that class
+
+```python
+
+class SomeClass:
+    
+    @staticmethod
+    def static_method():
+        pass
+```
 
 Difference:
 
-- A class method takes cls as the first parameter while a static method needs no specific parameters.
-- A class method can access or modify the class state while a static method can’t access or modify it.
-- In general, static methods know nothing about the class state. They are utility-type methods that take some parameters and work upon those parameters. On the other hand class methods must have class as a parameter.
+- A **class method** takes *cls* as the first parameter while a **static method** needs no specific parameters.
+- A **class method** can access or modify the class state while a **static method** can’t access or modify it.
+- In general, **static methods** know nothing about the class state. They are utility-type methods that take some parameters and work upon those parameters. On the other hand **class methods** must have class (*cls*) as a parameter.
+
+### What is super method in classes?
+
+**Super()** allows you to call methods of the superclass in your subclass. The primary use case of this is to extend the functionality of the inherited method.
+
+
+### Methods and super() examples
+
+```python
+
+class Human:
+
+    def __init__(self, intro):
+        print(f"i'm a {intro}, human being!")
+
+
+class Employee(Human):
+
+    rating = 10
+
+    def __init__(self, age, name):
+        self.age = age
+        self.name = name
+
+    # object method with calling super in it
+    def introduct_yourself(self, intro):
+        super().__init__(intro)
+
+    @staticmethod
+    def sample(x):
+        print('Inside static method', x)
+
+    @classmethod
+    def change_rating(cls, new_rating):
+        cls.rating = new_rating
+
+
+# Static method
+
+# call static method by class, without creating object
+Employee.sample(10)
+
+# can be called using object
+emp = Employee()
+emp.sample(10)
+
+# Class method
+
+ab = Employee(25, 'Alice')
+cd = Employee(27, 'Bob')
+print(ab.rating)   # will be 1o by default
+print(cd.rating)   # will be 1o by default
+
+ab.change_rating(15)
+print(cd.rating)     # will be 15, even we change it through ab object
+
+Employee.change_rating(20)
+print(cd.rating)     # will be 20, even we change it through Class
+
+# super() function
+# If we call
+ab.introduct_yourself('employee')
+
+# we will get, because mother class will be called 
+"i'm a employee, human being!"
+```
+
+### What is abstract Class?
+
+It's class, from which we can't create an object. Usually we need it to create some 'super' class and create there some needed methods, to necessarily need to be implemented by child classes
+
+```python
+
+from abc import ABC, abstractmethod
+
+# from ABC only
+def AbstractClass(ABC):
+
+    # need to be decorated
+    @abstractmethod
+    def necessarymethod(self):
+        pass
+
+
+def ChildClass(AbstractClass):
+
+    def necessarymethod(self):
+        print("look, mom, i've implemented it!")
+
+
+def AnotherChildClass(AbstractClass):
+
+    def notimplementnecessarymethod(self):
+        print("i'm a bad guy")
+
+
+# so
+
+# this will return error
+AbstractClass()
+
+
+# this will create an object
+child = ChildClass()
+
+
+# this will return error too
+badchild = AnotherChildClass()
+
+```
 
 ### Context Manager
 
@@ -466,6 +646,60 @@ finally:
 
 Object, that incapsulate logic of anything 
 
+```python
+
+def simple_decorator(func):
+
+    def wrapper(func):
+        print('do some before func')
+        func()
+        print('do some after func')
+
+    return wrapper
+
+# and we can modify our function two ways:
+
+@simple_decorator
+def our_func_to_decorate():
+    pass
+
+
+# or
+def our_func_to_decorate():
+    pass
+
+decorated_function = simple_decorator(our_func_to_decorate)
+```
+
+If we want to pass arguments to our function through decorator
+
+```python
+def one_more_layer(a=1)
+    def simple_decorator(func):
+
+        def wrapper(func, *args, **kwargs):
+            print('do some before func')
+            func(*args, **kwargs)
+            print('do some after func')
+
+        return wrapper
+    def simple_decorator
+
+# and we can modify our function two ways:
+
+@one_more_layer(a=2)
+def our_func_to_decorate():
+    pass
+
+
+# or
+def our_func_to_decorate( ):
+    pass
+
+first_layer_decorator = one_more_layer(a=2)
+actually_decorated_function = first_layer_decorator(our_func_to_decorate)
+```
+
 ## GIL, Threads, Processes
 
 Async - сам питон в рамках одного треда/процесса управляет «потоками» своего выполнения. Ты пишешь это управление сам
@@ -510,6 +744,34 @@ Processing - it's mostly for CPU-comsuming operations, but multithreading - it's
 - `load` - file -> json
 - `loads` - string -> json
 
+## Python testing
+
+```python
+import unittest
+
+def upper(some):
+    return some.upper()
+
+class TestSomething(unittest.TestCase):
+
+    def test_upper(self):
+        self.assertEqual(upper('foo'), 'FOO')
+
+    def test_isupper(self):
+        self.assertTrue('FOO'.isupper())
+        self.assertFalse('Foo'.isupper())
+
+    def test_split(self):
+        s = 'hello world'
+        self.assertEqual(s.split(), ['hello', 'world'])
+        # check that s.split fails when the separator is not a string
+        with self.assertRaises(TypeError):
+            s.split(2)
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
 ## Linux commands
 
 ### File system
@@ -530,7 +792,21 @@ Processing - it's mostly for CPU-comsuming operations, but multithreading - it's
 - **/media** - Media
 - **/srv** - Service data
 
-### Most used commands
+
+### Virtual Environment
+
+- `vitrualenv` - for Python2
+- `venv` - from Python3
+
+1. Create vitrual environment folder:
+```python
+python3 -m venv venv # second venv it's folder to install venv
+source env/bin/activate # activate for mac
+deactivate # deactivate
+```
+
+
+### Most used linux commands
 
 - **ls** - list of all directory components. `ls -a` shows all files
 - **cd** - change directory. `cd yourdirthatinparticulardir`
