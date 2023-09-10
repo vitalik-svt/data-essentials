@@ -4,11 +4,15 @@
 
 ### Key Objects
 
-- DAG
-- Task
-- Operator
-- Hook
-- XCom
+- **DAG** - Directed Acyclic Graph is the core concept of Airflow, collecting Tasks together, organized with dependencies and relationships to say how they should run.
+- **Dag run** - A DAG Run is an object representing an instantiation of the DAG in time. Any time the DAG is executed, a DAG Run is created and all tasks inside it are executed. The status of the DAG Run depends on the tasks states. Each DAG Run is run separately from one another, meaning that you can have many runs of a DAG at the same time.
+- **Task** - A Task is the basic unit of execution in Airflow. Tasks are arranged into DAGs, and then have upstream and downstream dependencies set between them into order to express the order they should run in.
+- **Operator** - a template for a predefined Task, that you can just define declaratively inside your DAG
+- **Sensor** - a special type of Operator that are designed to do exactly one thing - wait for something to occur. It can be time-based, or waiting for a file, or an external event, but all they do is wait until something happens, and then succeed so their downstream tasks can run
+- **Hook** - A hook is an abstraction of a specific API that allows Airflow to interact with an external system. Hooks are built into many operators, but they can also be used directly in DAG code. Hooks wrap around APIs and provide methods to interact with different external systems. Hooks standardize how Astronomer interacts with external systems and using them makes your DAG code cleaner, easier to read, and less prone to errors. To use a hook, you typically only need a connection ID to connect with an external system. For more information about setting up connections, see Manage your connections in Apache Airflow. All hooks inherit from the BaseHook class, which contains the logic to set up an external connection with a connection ID. On top of making the connection to an external system, individual hooks can contain additional methods to perform various actions within the external system. These methods might rely on different Python libraries for these interactions. For example, the S3Hook relies on the boto3 library to manage its Amazon S3 connection.
+- **XCom** - XComs (short for “cross-communications”) are a mechanism that let Tasks talk to each other, as by default Tasks are entirely isolated and may be running on entirely different machines.
+
+An XCom is identified by a key (essentially its name), as well as the task_id and dag_id it came from. They can have any (serializable) value, but they are only designed for small amounts of data; do not use them to pass around large values, like dataframes.
 
 ### Key Components
 
@@ -316,6 +320,12 @@ spark.udf.register('PythonSquareUDF', square)
 3. The narrow transformations will be grouped together into a single stage.
 4. The DAG scheduler will then submit the stages into the task scheduler. 
 
+
+- What happens when we submit a Spark Job?
+
+Using spark-submit command user submits the Spark application to Spark cluster. This program invokes the main() method that is specified in the spark-submit command, which launches the driver program. The driver program converts the code into Directed Acyclic Graph(DAG) which will have all the RDDs and transformations to be performed on them. During this phase driver program also does some optimizations and then it converts the DAG to a physical execution plan with set of stages. After this physical plan, driver creates small execution units called tasks. Then these tasks are sent to Spark Cluster.
+
+The driver program then talks to the cluster manager and requests for the resources for execution. Then the cluster manger launches the executors on the worker nodes. Executors will register themselves with driver program so the driver program will have the complete knowledge about the executors. Then driver program sends the tasks to the executors and starts the execution. Driver program always monitors these tasks that are running on the executors till the completion of job. When the job is completed or called stop() method in case of any failures, the driver program terminates and frees the allocated resources.
 
 
 ## Kafka
