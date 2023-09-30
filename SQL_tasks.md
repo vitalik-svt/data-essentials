@@ -125,6 +125,18 @@ and id = @id
 and @dt between fromdate and todate
 ```
 
+Answer2: 
+```sql
+SELECT 
+    price 
+FROM price
+WHERE 
+    dt <= @dt 
+    AND id = @id
+ORDER BY dt DESC 
+LIMIT 1
+```
+
 ## Find suppliers, that supply us biggest amount of money in last month
 
 |id |      dt    | id_supplier | id_product | quantity | price|
@@ -149,3 +161,62 @@ from
 where batch_cost = (select max(batch_cost) from ...)
 ```
 
+## How to find suppliers, that didn't supply us anything, if we have suppliers dict nearby
+DDL:
+```sql
+CREATE TABLE IF NOT EXISTS supplier (
+      id bigint not null,
+      name VARCHAR(200) not null 
+  );
+```
+
+id |name         |
+---|-------------|
+ 1 |  Supplier1  |
+ 2 |  Supplier2  |
+
+
+Answer:
+```sql
+WITH revenue AS (
+SELECT
+  id_supplier
+    SUM(quantity*price) as revenue
+FROM deliveries
+)
+SELECT 
+    id,
+    name
+FROM supplier
+LEFT JOIN deliveries ON supplier.id = deliveries.id_supplier
+WHERE 
+    supplier.id IS NULL
+```
+
+## What is min and max value can be for different type of joins? Values in tables are unique!
+```sql
+a - 5 rows
+b - 10 rows
+
+select count(*)
+from a
+unknown join b on unknown (a.a=b.b)
+```
+
+Answer:
+1. LEFT JOIN - min 5 max 5.
+2. RIGHT JOIN- min 10 max 10.
+3. INNER JOIN - min 0 max 5.
+4. FULL JOIN - min 10 (largest(a,b)) max 15(a + b).
+5. CROSS JOIN - min 50 max 50.
+
+## There is a table with ~10 billion rows, which contains 10 last years of data, and which is really used by users. Data splitted by years evenly. You decided to left only two last years, because it's most used data. How you will perform that action, and how you do that in future?  
+
+Answer:
+You can insert last two years in separate table and send all queries to that table. It will be zero downtime, but it costs additional space.
+In future it will be more convinient to partitionize table by years, and drop/detach and store somwhere outdated partitions  
+
+## There is a huge table with 100+ columns. There is no primary key, but we have set of 30 columns, that combined can be used as key. How you can check if there is duplicates in table? Note, that group by by 30 columns will lasts forever, or even doesn't work
+
+Answer:
+You can concatenate that 30 columns and mashe hash of that concatenation. And group by that hashed field
