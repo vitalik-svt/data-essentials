@@ -152,6 +152,18 @@ PostgreSQL doesn't have that concepts: all data stored in heaps, so all indexes 
 
 It's more simpler to consider indexes as separate from data structure things, so clustered index - it's not really common thing
 
+### Pro et contra
+
+Pro: 
+1. Faster select operations 
+2. Phisycal sorting of data (but for clustered types of indexes only). If it will be unclustered index (most of it, tbh), it will be just additional data structure, that contains links to real data   
+
+Contra: 
+1. Slowyng DML operations (UPDATE, INSERT, DELETE) because you need to rebuild index each time
+2. Increasing of size of database (for non-clustered indexes)
+3. It takes time to rebuild indexes  
+
+
 ### Basic Data base index types
 
 **B-Tree (Balanced)** - Most used type at that time. 
@@ -201,10 +213,25 @@ We go to the index, iterate over them, and go to particular data cells, with lin
 
 In that case, if, for example, we have table with our employees, and if we quite old company, that means, that flag `active_employee` will be on 90% filled with `False`. So if we want to select some of old employee, and if we have that field indexed, so we need to get to index and select 90% of rows with links in index. That whole "go to index -> find value -> go to link - > find real value" will be more time consuming, than simple fullscan in actual data
 
-
 ### Why you can't just create as many indexes as possible, if then so great?
 
 Because each index should be rebuild after any changes in table, which slow writes in database
+
+## What is Database lock? 
+
+*lock* - it's a "flag", that that particular object taken by some transaction, and that prevents other transactions perform operations over that object.
+Because before starting operating, transaction should check if there is lock flag on object, or not. And if yes, transaction wont run.
+
+Levels:
+1. Database level - locks whole db.
+2. Table level
+3. Page level
+4. Row level
+
+Types:
+1. Exclusive - just blocks any operations for that row/page/etc for other transactions
+2. Shared - performed only for read transactions. That means, that object can get many shared locks, because all of that transactions only read it.
+3. Predicate - It works with predicates as in where clause `where id > 100 and day_id = '2023-09-30'`
 
 ## RowStore and ColumnStore
 
