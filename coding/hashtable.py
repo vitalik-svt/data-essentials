@@ -2,6 +2,8 @@ import unittest
 
 class Hashtable:
 
+	'''hashtable implementation'''
+
 	def __init__(self, size):
 		'''core thing in hastables it's creation of right amount of buckets'''
 		self.size = size
