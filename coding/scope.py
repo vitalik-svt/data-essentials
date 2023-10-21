@@ -1,4 +1,6 @@
 
+# Playing with different attributes, scope of class, functions, etc
+
 attribute = 'outside of class'
 
 class Example:
@@ -34,7 +36,6 @@ def run():
 
 	print(f'exmpl_2.some_1: {exmpl_2.some_1}')
 	print(f'exmpl_2.some_2: {exmpl_2.some_2}')
-
 
 	print(f'exmpl_2.attr_3: {exmpl_2.attr_3}')
 	Example.attr_3 = 'pure class attribute changed'
