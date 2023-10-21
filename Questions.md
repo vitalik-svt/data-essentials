@@ -2,15 +2,19 @@
 
 ## Common questions from employer
 
-*I think you should think and understand, why really you seeking new opportunity. And you don't must to imagine them, of course. It will be better to be fair with yourself  at first*
+*I think you should think and understand, why really you seeking new opportunity. And you must be fair with yourself at first*
 
 - Tell me about yourself
 - Why our company?
-	*Want to be involved in that product. Get new skills. And get new life experience (relocation, for example)*
 - What inspires you, how you choosing your next project?
-	*For me, personnaly, at first i should like company and product. Than i will take a look at tech stack, because it's important to me learning constantly, and getting new knowledge*
 - Why should we hire you?
-	*My skills and expertise first of all. Also because of some structural approach, and long-term oriented mind*
+- What was your biggest challenge, or more remarkable project?
+- What you would changed in your previos project with knowledge, which you have now
+- What do you do outside of work hours to make yourself a better developer?
+- Have you ever had a failed project? Give me an example and explain why you think it was a failure. What would you have done differently to ensure its success?
+- Tell me about a tough development problem you've had in the past and how you solved it.
+- Describe a time when you experienced a significant project change last minute. How did you handle it and complete the project on time?
+- How you deal with bad feedback or conflicts?
 
 ## Common questions for employer
 
@@ -32,9 +36,10 @@
 - That position more about infrastructure, or for building selfservice tools, or it will be one gate to all ETL's?
 - Where do you store documentation?
 - Do you have code review?
-- Do you have CI/CD, do you have DevOps?
+- How you deal with data quality and testing?
+- Do you have CI/CD, do you have separate DevOps team?
 - Who create reports? Engineer, or you have separate BI developers?
-- Do you use Docker, Kubernetes?
+- Do you use containerization services?
 - Do Company have meetups?
 - Are you opened for new technologies in projects?
 - Is it Analytical or Product side?
