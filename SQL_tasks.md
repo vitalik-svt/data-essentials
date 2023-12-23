@@ -137,6 +137,16 @@ ORDER BY dt DESC
 LIMIT 1
 ```
 
+## we have tables ABBC и AABBE. What we got for INNER JOIN and RIGHT JOIN?
+
+Answer:
+
+inner:
+AABBBB
+
+right:
+AABBBBE
+
 ## Find suppliers, that supply us biggest amount of money in last month
 
 |id |      dt    | id_supplier | id_product | quantity | price|
