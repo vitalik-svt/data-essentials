@@ -193,6 +193,73 @@ WHERE
     supplier.id IS NULL
 ```
 
+## Question: We have two tables with item sstellites: address and price. We need to get last actual address and price for each item
+
+```sql
+create table s_item_address (
+    item_id int,
+    address varchar(100),
+    actual_date timestamp
+);
+
+create table s_item_price (
+    item_id int,
+    price int,
+    actual_date timestamp
+);
+```
+
+Answer:
+
+```sql
+select coalesce(sia.item_id, sip.item_id) as item_id
+     , address
+     , price
+from 
+    (
+    select item_id
+         , address
+         , row_number() over(partition by item_id order by actual_date desc) as rn
+    s_item_address
+    ) sia 
+full outer join
+    (
+    select item_id
+         , price
+         , row_number() over(partition by item_id order by actual_date desc) as rn
+    s_item_price
+    ) sip 
+    on 1=1
+    and sia.rn = 1
+    and sip.rn = 1
+    and sia.item_id = sip.item_id
+```
+
+## Question: We have table with students marks. Get the students with less than 10 "2" marks , and more than 2 "5" marks
+
+```sql
+create table marks (
+    student_id int,
+    mark int
+);
+```
+
+Answer:
+```sql
+select student_id
+from (
+    select student_id
+        , sum(case when mark = 5 then 1 else 0 end) as num_5
+        , sum(case when mark = 2 then 1 else 0 end) as num_2
+    from marks
+    group by student_id
+    ) stg
+where 1=1
+    and num_2 < 10
+    and num_5 > 2
+```
+
+
 ## What is min and max value can be for different type of joins? Values in tables are unique!
 ```sql
 a - 5 rows
