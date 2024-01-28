@@ -128,19 +128,13 @@ if __name__ == '__main__':
 
 	com = Community([User('user1'), User('user2'), User('user3'), User('user4'), User('user5')])
 
-	# start = time.time()
-	# com.get_nicks_sequentially()
-	# end = time.time()
-	# print(f'get_nicks_sequentially takes: {end - start}')
+	def tester(method):
+		start = time.time()
+		method()
+		end = time.time()
+		print(f'{method.__name__} takes: {end - start}')
 
-	start = time.time()
-	com.get_nicks_threading_random()
-	end = time.time()
-	print(f'get_nicks_threading_random takes: {end - start}')
-
-	start = time.time()
-	com.get_nicks_threading_ordered_additional_structure()
-	end = time.time()
-	print(f'get_nicks_threading_ordered_additional_structure takes: {end - start}')
-
+	tester(com.get_nicks_sequentially)
+	tester(com.get_nicks_threading_random)
+	tester(com.get_nicks_threading_ordered_additional_structure)
 
