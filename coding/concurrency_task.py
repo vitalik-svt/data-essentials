@@ -10,7 +10,9 @@ Then let's try to solve some problem
 '''
 
 from multiprocessing import Process
+from multiprocessing.shared_memory import ShareableList
 from multiprocessing.pool import ThreadPool
+import multiprocessing as mltp
 from threading import Thread
 import queue
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
@@ -34,9 +36,13 @@ class User():
 		queue.put(nick)
 		queue.task_done()
 
-	def put_nick_in_results_list(self, results_list, place):
+	def put_nick_in_results_list_by_index(self, results_list, index):
 		nick = self.get_nick()
-		results_list[place] = nick
+		results_list[index] = nick
+
+	def put_nick_in_mltp_queue(self, queue):
+		nick = self.get_nick()
+		queue.put(nick)
 
 
 class Community():
@@ -107,7 +113,7 @@ class Community():
 		threads = []
 
 		for i, user in enumerate(self.users):
-			thread = Thread(target=user.put_nick_in_results_list, args=(list_of_nicks, i))
+			thread = Thread(target=user.put_nick_in_results_list_by_index, args=(list_of_nicks, i))
 			threads.append(thread)	
 			thread.start()
 
@@ -232,11 +238,78 @@ class Community():
 		print(list_of_nicks)
 
 
-	def get_nicks_multiprocessing_random(self):
-		pass
+	def get_nicks_multiprocessing_random_processpoolexecutor(self):
+		'''
+		And for multiprocessing we can use concurrent.futures ProcessPoolExecutor pool,
+		which provides similar to ThreadPoolExecutor API, which is really convinient.
+		Because you can try different options of pool and test, what will be better in your case
+		which is nice
+		'''
+
+		list_of_nicks = []
+
+		with ProcessPoolExecutor(len(self.users)) as executor:
+
+			pool = []
+
+			# at first we Sumbit (start) our threads
+			for user in self.users:
+				process = executor.submit(user.get_nick)
+				# and collect all threads in pool (we can do it with list comprehension also)
+				pool.append(process)
+
+			# then we wait until all threads will be done:
+			for process in as_completed(pool):
+				list_of_nicks.append(process.result())
+
+		print(list_of_nicks)
+
+
+	def get_nicks_multiprocessing_ordered_processpoolexecutor(self):
+
+		list_of_nicks = []
+
+		with ProcessPoolExecutor(len(self.users)) as executor:
+			
+			results = executor.map(User.get_nick, self.users)
+
+		# then we wait until all threads will be done:
+		for result in results:
+			list_of_nicks.append(result)
+
+		print(list_of_nicks)
+
 
 	def get_nicks_multiprocessing_random(self):
-		pass
+		'''
+		Now let's try with multiprocessing
+
+		Processes doesn't share any resources, so we can't just write in simple list, or other simple structure
+		We need to choose Queue (but multiprocessing.Queue, not regular one), 
+		or some multiprocessing.Manager().dict(), for example, 
+
+		https://docs.python.org/3/library/multiprocessing.html
+		'''
+
+		pool = []
+		result = mltp.Queue()
+		list_of_nicks = []
+
+		# we start all our parallel processes
+		for i, user in enumerate(self.users):
+			process = Process(target=user.put_nick_in_mltp_queue, args=(result, ))
+			pool.append(process)
+			process.start()
+
+		# with join we will wait for all processes to stop (in any order)
+		for process in pool:
+			process.join()
+
+		for i in range(len(self.users)):
+			list_of_nicks.append(result.get())
+
+		print(list_of_nicks)
+
 
 
 if __name__ == '__main__':
@@ -249,11 +322,16 @@ if __name__ == '__main__':
 		end = time.time()
 		print(f'{method.__name__} took: {end - start}')
 
-	# tester(com.get_nicks_sequentially)
-	# tester(com.get_nicks_threading_random)
-	# tester(com.get_nicks_threading_ordered_additional_structure)
-	# tester(com.get_nicks_threading_ordered_threadpool)
-	# tester(com.get_nicks_threading_random_threadpool)
-	# tester(com.get_nicks_threading_random_threadpoolexecutor)
-	# tester(com.get_nicks_threading_ordered_threadpoolexecutor)
-	# tester(com.get_nicks_threading_ordered_threadpoolexecutor_structure)
+	tester(com.get_nicks_sequentially)
+	tester(com.get_nicks_threading_random)
+	tester(com.get_nicks_threading_ordered_additional_structure)
+	tester(com.get_nicks_threading_ordered_threadpool)
+	tester(com.get_nicks_threading_random_threadpool)
+	tester(com.get_nicks_threading_random_threadpoolexecutor)
+	tester(com.get_nicks_threading_ordered_threadpoolexecutor)
+	tester(com.get_nicks_threading_ordered_threadpoolexecutor_structure)
+	tester(com.get_nicks_multiprocessing_random_processpoolexecutor)
+	tester(com.get_nicks_multiprocessing_ordered_processpoolexecutor)
+	tester(com.get_nicks_multiprocessing_random)
+
+
