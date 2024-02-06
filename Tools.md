@@ -204,13 +204,25 @@ So you need read dataset from HDFS three times
 But in Spark you can load that data in RDD (in RAM) and use it three times
 So you read disk only once
 
+### Pro's of Spark
+
+- Can used for streaming and batching becuse don't have havy I/O operations
+- Spark only for processing, not for storaging
+- Spark can be connected to any source of data (HDFS, S3, Cassandra, HBase), beacuse of RDD abstraction
+- Spark have plenty of libs (SparkSQL, MLib, GraphX, Spark Streaming)
+- Works everywhere: HDFS, Mesos, Standalone (singlenode), in Cloud
+
 ### Key Concepts
 
 #### RDD 
 
 Sparks works on RDD, instead of HDFS
+
 **RDD (Resilent Distributed Dataset)** - it's abstraction (API) to data.
-It can be implemented over RAM, or HDFS, or any other source
+It can be implemented over RAM, or HDFS, or any other source.
+It's constructed by read different partitions/portions of the source
+
+RDD not contains the actual data! It contains rules (lineage/dag) of HOW to calculate/get that data!
 
 RDD can be :
 - 1/2 dimensiinal - dataframe/dataset
@@ -219,7 +231,15 @@ RDD can be :
 - All operations over RDD can be imagined as DAG (graph)
 
 **Lineage** - it's RDD, that store chain of operations over RDD for each (!) RDD. it's DAG, in a nutshell.
-If something get wrong, with some RDD, whle lineage restarts to that RDD
+If something get wrong, with some RDD, whle lineage restarts to that RDD.
+When RDD is creates, lineage is updated (or created) and kept in-memory, by spark.
+**Lineage** important part of *lazy evaluation*, that means, that Spark doesn't calculate evry step of transformation each time that you write it. It start execute whole plan only when one of the *actions* called.
+
+Lineage essential for **Resilent** part in RDD's abbreviation, because it helps reprocess RDD, if something went wrong
+
+There can be **Transformations** and **Actions** on RDDs:
+**Transformations** - update the lineage
+**Actions** - Execute actual lineage
 
 **RDD Transformations**:
 - **Narrow**:
@@ -231,46 +251,51 @@ If something get wrong, with some RDD, whle lineage restarts to that RDD
 	Example: filter operation<br>
 - **Wide**:
 	When each partition of parent RDD used by many child paririons<br>
-	Example: groupbykey operation<br>
+	Example: groupbykey, reducebykey operation<br>
 
 So, because of that dependencies Scheduler make execution plan
 
-#### Pro's
+#### Job
+It's main 'calculation' object. It's called every time when you call an Action operation (means, when you actually need perform some calculation).
+**№ of Jobs = № of Actions**
 
-- Can used for streaming and batching becuse don't have havy I/O operations
-- Spark only for processing, not for storaging
-- Spark can be connected to any source of data (HDFS, S3, Cassandra, HBase), beacuse of RDD abstraction
-- Spark have plenty of libs (SparkSQL, MLib, GraphX, Spark Streaming)
-- Works everywhere: HDFS, Mesos, Standalone (singlenode), in Cloud
+#### Stage
+Stages are lays "inside" each job. Planner combine all narrow transformations together, so number of stages will be the same as number of wide-transormations in our rdd plus one
+**№ of Stages = № of Wide Transformations + 1**
+
+#### Task
+Task lays under stages. And it's physicall calculation of stage over each partition of RDD. So there will be different task for different partitions, but there will be only one stage, for example
+**№ of Stages = № of Partitions of RDD**
+
+### Spark Submit 
+*What happens when we submit a Spark Job?*
+
+- With spark-submit command user submits the Spark application to Spark cluster. This program invokes the main() method that is specified in the spark-submit command, which launches the **driver** program. 
+- The **driver** program converts the code into Directed Acyclic Graph(**DAG**) which will have plan of all the RDDs and transformations to be performed on them. During this phase driver program also does some optimizations and 
+- Then it converts the DAG to a physical execution plan with set of **stages*. 
+- After this physical plan, driver creates small execution units called **tasks**. 
+- Then these tasks are sent to Spark Cluster.
+- The driver program then talks to the cluster manager and requests for the resources for execution, which mentioned while calling spark-submit command
+- Then the **cluster manger** launches the **executors** on the worker nodes. 
+- **Executors** will **register** themselves with driver program so the driver program will have the complete knowledge about the executors. 
+- Then **driver** program **sends** the tasks to the **executors** and starts the execution. 
+- Driver program always monitors these tasks that are running on the executors till the completion of job. 
+- When the job is completed or called stop() method in case of any failures, the driver program terminates and frees the allocated resources.
+
+
+
+#### DataFrame
+
+Now (in Spark 2.0 or so), df - it's higher layer of abstraction on top of RDD, and it's commonly used now.
 
 #### Shared variables
 
 - Broadcast - read-only
 - Accumulator - write-only
 
-#### Operation types
-
-- Transformations - operations, that create new RDD in result
-- Actions - operations, that return value
-
-#### Components
-- Spark Application - Application itself, contains Driver and Executors
-	- Spark Driver - coordination of whole process
-	- Spark Executor - Execute process
-- Spark Session - Initialize Spark Appliction, and create distibuted system
-- Cluster Manager - Resource manager (YARN, Mesos, etc)
-
-#### Memory Management 
-
-- If it will lack of memory, LRU (Last recenty Used) meachanim will be launched, and deletes old RDDs
-- Spark presents three storaging options:
-	- memory storage, serialized Java objects
-	- memory storage, deserialized Java objects
-	- disk storage
-
 ### Operations
 
-Transformations (Returns new RDD):
+**Transformations** (Update lineage and returns new RDD):
 
 - map - apply function for each element, returns changed elements
 - filter - filter sub-rdd from rdd
@@ -286,7 +311,7 @@ Transformations (Returns new RDD):
 - sort
 - partitionby
 
-Actions (Returns value):
+**Actions** (Execute lineage and returns value):
 
 - count
 - collect
@@ -296,6 +321,32 @@ Actions (Returns value):
 
 Transformations operations are lazy - they don't compute while called.
 Whole lineage started to compute only when Action operator called
+
+### Architecture
+
+- **Spark Session (Spark Context)** - Main entry point to Spark. It represents connection to Spark Cluster, and contains all information about that particular spark session. Which RDDs you have in that session, accumulators, Broadcast, etc.
+It was context before Spark 2.0 presented. Now Session - more prefreable way. But in general they represent the same thing
+	- **Spark Conf** - It's just configuration object, with wich you can create Spark Context, that you're really need
+- **Worker nodes** - 
+- **Driver machine** - 
+- **Executor** - 
+- **Cluster Machine** - 
+
+#### Components
+- Spark Application - Application itself, contains Driver and Executors
+	- Spark Driver - coordination of whole process
+	- Spark Executor - Execute process
+- Spark Session - Initialize Spark Appliction, and create distibuted system
+- Cluster Manager - Resource manager (YARN, Mesos, K8s, etc)
+
+#### Memory Management 
+
+- If it will lack of memory, LRU (Last recenty Used) meachanim will be launched, and deletes old RDDs
+- Spark presents three storaging options:
+	- memory storage, serialized Java objects
+	- memory storage, deserialized Java objects
+	- disk storage
+
 
 ### Questions
 
@@ -320,12 +371,9 @@ spark.udf.register('PythonSquareUDF', square)
 3. The narrow transformations will be grouped together into a single stage.
 4. The DAG scheduler will then submit the stages into the task scheduler. 
 
+### Links
 
-- What happens when we submit a Spark Job?
-
-Using spark-submit command user submits the Spark application to Spark cluster. This program invokes the main() method that is specified in the spark-submit command, which launches the driver program. The driver program converts the code into Directed Acyclic Graph(DAG) which will have all the RDDs and transformations to be performed on them. During this phase driver program also does some optimizations and then it converts the DAG to a physical execution plan with set of stages. After this physical plan, driver creates small execution units called tasks. Then these tasks are sent to Spark Cluster.
-
-The driver program then talks to the cluster manager and requests for the resources for execution. Then the cluster manger launches the executors on the worker nodes. Executors will register themselves with driver program so the driver program will have the complete knowledge about the executors. Then driver program sends the tasks to the executors and starts the execution. Driver program always monitors these tasks that are running on the executors till the completion of job. When the job is completed or called stop() method in case of any failures, the driver program terminates and frees the allocated resources.
+1. https://youtube.com/playlist?list=PLHJp-gMPHvp9MDqV4qybL1FSBWcwMopcf&si=LVMlrr45tgwxIBja
 
 
 ## Kafka
