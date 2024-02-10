@@ -411,6 +411,7 @@ Simple generator expresstion:
 
 it returns one x at a time, and don't stored anything else, so it can be used for infinite sequence without consuming memory
 
+
 ## Classes, Objects
 
 ### OOP Concepts
@@ -594,6 +595,33 @@ badchild = AnotherChildClass()
 
 ```
 
+### Metaclass ([info](https://realpython.com/python-metaclasses/#old-style-vs-new-style-classes))
+
+Classes it's instanse of object, but by creating a Metaclass you can change basic object behaviour.
+By default, when new instanse of class created, interpreter call basic method `__call__`, which calls `__new__` and `__init__` methods. So you can change something by redefining that methods in your custom Metaclass
+
+```python
+def new(cls):
+     x = object.__new__(cls)
+     x.attr = 100
+     return x
+
+Foo.__new__ = new
+
+f = Foo()
+f.attr
+# 100
+
+g = Foo()
+g.attr
+# 100
+```
+
+But is it really nesessary? You can create same behavior using:
+- Inheritance from some class
+- Decorator
+
+
 ### Context Manager
 
 it's `with` operator, that define methods:
@@ -624,6 +652,69 @@ Name of module placed in  `__name__` variable. If module not imported, but runne
 ### Package
 
 It's folder with modules and `__init__.py` in it
+
+### Global keyword
+
+It's used to exactly determine, that variable should be global, so interpreter can not to seek it internal scope (inside function)
+
+You can easily access global variable from function, but modifiying it can cause some problems
+
+```python
+a = 5
+b = 10
+
+def add():
+    c = a + b
+    print(c)
+
+add()
+# 15 - which is fine
+
+a = 15
+
+def replace():
+    b = a + 5
+    a = b
+    print(a)
+
+replace() 
+# will cause the error, because interpreter sees, that we define local variable a (in a=b row), 
+# but before that we update a (which we now - is global), so for us it's two different variables.
+# but interpreter things it's the same variable, and it will throw exception:
+# UnboundLocalError: local variable 'a' referenced before assignment
+
+# So we can easily fix that by using global keyword
+
+x = 15
+
+def replace_global():
+
+    global x
+
+    x += 5
+    print(x)
+
+replace_global() 
+# which will return 20
+
+# another example is to modifiyng some structures
+
+arr = [10, 20, 30]
+ 
+ 
+def fun():
+    global arr
+    arr = [20, 30, 40]
+    # nb: if we will not use global, that local arr will be created, and nothing happened in outer scope
+ 
+ 
+print(arr)
+# [10, 20, 30]
+fun()
+print(arr)
+# [20, 30, 40]
+
+```
  
 ## Exceptions
 
@@ -699,6 +790,77 @@ def our_func_to_decorate( ):
 first_layer_decorator = one_more_layer(a=2)
 actually_decorated_function = first_layer_decorator(our_func_to_decorate)
 ```
+
+## Descriptor ([doc](https://docs.python.org/3/howto/descriptor.html#descriptor-howto-guide))
+
+It's class which defines their own methods `__get__(), __set__(), or __delete__()`. 
+When a class attribute is a descriptor, its special binding behavior is triggered upon attribute lookup. 
+Normally, using a.b to get, set or delete an attribute looks up the object named b in the class dictionary for a, but if b is a descriptor, the respective descriptor method gets called.  
+
+```python
+
+# The Ten class is a descriptor whose __get__() method always returns the constant 10:
+
+class Ten:
+    def __get__(self, obj, objtype=None):
+        return 10
+
+# To use the descriptor, it must be stored as a class variable in another class:
+
+class A:
+    x = 5                       # Regular class attribute
+    y = Ten()                   # Descriptor instance
+
+
+# An interactive session shows the difference between normal attribute lookup and descriptor lookup:
+
+a = A()                         # Make an instance of class A
+a.x                         # Normal attribute lookup
+# 5
+
+a.y                         # Descriptor lookup
+# 10
+```
+
+In the a.x attribute lookup, the dot operator finds 'x': 5 in the class dictionary. In the a.y lookup, the dot operator finds a descriptor instance, recognized by its __get__ method. Calling that method returns 10.
+
+Note that the value 10 is not stored in either the class dictionary or the instance dictionary. Instead, the value 10 is computed on demand.
+
+**Usually descriptors used to perform things dynamically** (That's why they alled descriptors. But it's just my guess) 
+
+```python
+import os
+
+# Interesting descriptors typically run computations instead of returning constants:
+
+class DirectorySize:
+
+    def __get__(self, obj, objtype=None):
+        return len(os.listdir(obj.dirname))
+
+class Directory:
+
+    size = DirectorySize()              # Descriptor instance
+
+    def __init__(self, dirname):
+        self.dirname = dirname          # Regular instance attribute
+
+# An interactive session shows that the lookup is dynamic — it computes different, updated answers each time:
+
+s = Directory('songs')
+g = Directory('games')
+s.size                              # The songs directory has twenty files
+# 20
+
+g.size                              # The games directory has three files
+# 3
+
+os.remove('games/chess')            # Delete a game
+g.size                              # File count is automatically updated
+# 2
+```
+
+Besides showing how descriptors can run computations, this example also reveals the purpose of the parameters to __get__(). The self parameter is size, an instance of DirectorySize. The obj parameter is either g or s, an instance of Directory. It is the obj parameter that lets the __get__() method learn the target directory. The objtype parameter is the class Directory.
 
 ## GIL, Threads, Processes
 
