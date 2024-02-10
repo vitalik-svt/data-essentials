@@ -237,6 +237,8 @@ When RDD is creates, lineage is updated (or created) and kept in-memory, by spar
 
 Lineage essential for **Resilent** part in RDD's abbreviation, because it helps reprocess RDD, if something went wrong
 
+**DAG** - very close to lineage ([medium](https://tsaiprabhanj.medium.com/spark-dag-and-rdd-lineage-cb41a0cdfc23#:~:text=In%20summary%2C%20RDD%20lineage%20provides,of%20tasks%20for%20improved%20performance.)), but represent more high-livel abstraction: RDD lineage provides the foundation for Spark’s fault tolerance by recording the sequence of transformations applied to data. The Spark DAG is a higher-level representation of the logical execution plan, incorporating RDD lineage and optimizing the execution of tasks for improved performance. Both concepts are crucial for Spark’s ability to efficiently process and recover from failures in distributed environments
+
 There can be **Transformations** and **Actions** on RDDs:
 **Transformations** - update the lineage
 **Actions** - Execute actual lineage
@@ -252,6 +254,7 @@ There can be **Transformations** and **Actions** on RDDs:
 - **Wide**:
 	When each partition of parent RDD used by many child paririons<br>
 	Example: groupbykey, reducebykey operation<br>
+	**Join can be both Wide and NArrow: it depends on distribution of elements through partitions (like in MPP)**
 
 So, because of that dependencies Scheduler make execution plan
 
@@ -265,35 +268,63 @@ Stages are lays "inside" each job. Planner combine all narrow transformations to
 
 #### Task
 Task lays under stages. And it's physicall calculation of stage over each partition of RDD. So there will be different task for different partitions, but there will be only one stage, for example
-**№ of Stages = № of Partitions of RDD**
+**№ of Stages depends on № of Partitions of RDD**
+
+### Partitioner
+
+It's process, that create "shuffle" operation in wide Transformations stage: it's reorganise partitions of parent rdd to child rdd.
+It's important important to implement right logic of shuffling, to get rid of "skewed" data (imbalanced repartitioning)
+
+There can be different algorithms in partitioner, to decide, in which partition which key should go:
+- **Hash partitioner**: Just hash from key - as i.e. key%n (where n - number of partitions in child)
+- **Range partitioner**: Where few "milestone" numbers (boundary points) are picked (which is most crucial part), and all key less than 1st number will be in first partition, all keys between 1st and snd - in second partition and so on (used for sorting tasks). Interesting part, that to determine that boundary points, Spark launches one more job (profiling), to scan your rdd (not full scan), and pick few pieces of data, to collect some statistic and determine boundary points for range partitioning
+
+we can check what partitioner are last used:
+'''python
+some_rdd.partitioner.partitionFunc()
+'''
 
 ### Spark Submit 
 *What happens when we submit a Spark Job?*
 
 - With spark-submit command user submits the Spark application to Spark cluster. This program invokes the main() method that is specified in the spark-submit command, which launches the **driver** program. 
-- The **driver** program converts the code into Directed Acyclic Graph(**DAG**) which will have plan of all the RDDs and transformations to be performed on them. During this phase driver program also does some optimizations and 
-- Then it converts the DAG to a physical execution plan with set of **stages*. 
-- After this physical plan, driver creates small execution units called **tasks**. 
-- Then these tasks are sent to Spark Cluster.
-- The driver program then talks to the cluster manager and requests for the resources for execution, which mentioned while calling spark-submit command
+- The **driver** program:
+	- Converts the code into **DAG**, which will have plan of all the RDDs and transformations to be performed on them. During this phase driver also does some optimizations 
+	- Then it converts the DAG to a physical execution plan with set of **stages**. 
+	- After this physical plan, driver creates small execution units called **tasks**. 
+- Then these tasks are sent to **Spark Cluster**.
+- The driver program then talks to the cluster manager and **requests for the resources** for execution, which mentioned while calling spark-submit command
 - Then the **cluster manger** launches the **executors** on the worker nodes. 
 - **Executors** will **register** themselves with driver program so the driver program will have the complete knowledge about the executors. 
 - Then **driver** program **sends** the tasks to the **executors** and starts the execution. 
 - Driver program always monitors these tasks that are running on the executors till the completion of job. 
 - When the job is completed or called stop() method in case of any failures, the driver program terminates and frees the allocated resources.
 
+#### Vays to operate with data
 
+- **RDD** - oldest API to manipulate on low-level. Not type-safe
+- **DataFrame** (in Spark 2.0 or so), df - it's higher layer of abstraction than of RDD, and it's commonly used now. It's even faster than rdd due to low-level optimization
+- **DataSet** - has reachest API, but not (!) availiable for python
 
-#### DataFrame
-
-Now (in Spark 2.0 or so), df - it's higher layer of abstraction on top of RDD, and it's commonly used now.
 
 #### Shared variables
 
-- Broadcast - read-only
-- Accumulator - write-only
+- **Broadcast** - read-only variable
+	it's file, that sent to **each executor** (not to the each task), cached, and can be accessed from inside task of that executor. It's created on spark driver, and sent to each node.
+	It's ok for some relatevely small dictionaries/mappings , with which we can perfor, join without shuffle operation, because each partition of facts data will have acess to that common broadcasted dictionary.
+	It's stored in serialiazble manner to lower memoru consumption
 
-### Operations
+	Created by `brdcst = SparkContext.broadcast(v)`
+	And can be accessed by `brdcst.value`
+
+- **Accumulator** - write-only variable
+
+	It's counters, that **each task** have, and after finishing their job, they send they result to driver programm, which accumulate them (simply sum-up)
+
+
+
+
+### Operations on df
 
 **Transformations** (Update lineage and returns new RDD):
 
@@ -301,8 +332,9 @@ Now (in Spark 2.0 or so), df - it's higher layer of abstraction on top of RDD, a
 - filter - filter sub-rdd from rdd
 - flatmap - apply function for each element, but can return group of elements for each element
 - sample
-- groupbykey 
-- reducebykey - grouping + function
+- groupByKey 
+- reduceByKey - grouping + function
+- sortByKey
 - union
 - join
 - cogroup
@@ -313,9 +345,9 @@ Now (in Spark 2.0 or so), df - it's higher layer of abstraction on top of RDD, a
 
 **Actions** (Execute lineage and returns value):
 
-- count
 - collect
 - reduce
+- count
 - lookup - get value by key
 - save
 
@@ -327,17 +359,32 @@ Whole lineage started to compute only when Action operator called
 - **Spark Session (Spark Context)** - Main entry point to Spark. It represents connection to Spark Cluster, and contains all information about that particular spark session. Which RDDs you have in that session, accumulators, Broadcast, etc.
 It was context before Spark 2.0 presented. Now Session - more prefreable way. But in general they represent the same thing
 	- **Spark Conf** - It's just configuration object, with wich you can create Spark Context, that you're really need
-- **Worker nodes** - 
-- **Driver machine** - 
-- **Executor** - 
-- **Cluster Machine** - 
+- **Worker nodes** - ???
+- **Driver machine** - ???
+- **Executor** - ???
+- **Cluster Machine** - ???
 
-#### Components
-- Spark Application - Application itself, contains Driver and Executors
-	- Spark Driver - coordination of whole process
-	- Spark Executor - Execute process
-- Spark Session - Initialize Spark Appliction, and create distibuted system
-- Cluster Manager - Resource manager (YARN, Mesos, K8s, etc)
+### Caching
+
+Because every time you call the action whole lineage executed, and it also may be needed to perform differnt actions over the same rdd, it's nice to have opportunity to precalculate rdd (perform reads, joins, etc), then save it (cached) and calculate needed actions then, without need to read all data again. You can do that with:
+
+- `persist()` - which is have more options to store data in different ways 
+- `cache()` - more widely used.
+
+You can store cash on different storage levels:
+- memory_only
+- memory_and_disk
+- memory_only_ser (serialized)
+- memory_and_disk_ser
+- disk_only
+- ...
+
+So you can cash rdd with that command (note, that it will cashed inly when first action will be called)
+```python
+from pyspark.storagelevel import StorageLevel
+
+rdd.persist(StorageLevel.MEMORY_ONLY)
+```
 
 #### Memory Management 
 
@@ -346,6 +393,13 @@ It was context before Spark 2.0 presented. Now Session - more prefreable way. Bu
 	- memory storage, serialized Java objects
 	- memory storage, deserialized Java objects
 	- disk storage
+
+#### Components
+- Spark Application - Application itself, contains Driver and Executors
+	- Spark Driver - coordination of whole process
+	- Spark Executor - Execute process
+- Spark Session - Initialize Spark Appliction, and create distibuted system
+- Cluster Manager - Resource manager (YARN, Mesos, K8s, etc)
 
 
 ### Questions
