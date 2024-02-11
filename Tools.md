@@ -321,7 +321,8 @@ some_rdd.partitioner.partitionFunc()
 
 	It's counters, that **each task** have, and after finishing their job, they send they result to driver programm, which accumulate them (simply sum-up)
 
-
+	Can be created by  `accm = SparkContext.accumulator(v)` v - initial value, par example 0
+	And can be increased by `accm += 1`
 
 
 ### Operations on df
@@ -333,8 +334,13 @@ some_rdd.partitioner.partitionFunc()
 - flatmap - apply function for each element, but can return group of elements for each element
 - sample
 - groupByKey 
-- reduceByKey - grouping + function
+- reduceByKey - grouping + function applies for each group - n.b.: that's combiner operation, means that it's performed before and after shuffle! You can pass only one functiom which will ber performed on combine stage, an on reduce stage (after shuffle)
+- combineByKey - Combiner function, in which you can pass three functions: 
+	- initialise function: what to do with first seen key inside partition (performed before shuffle)
+	- combine function: what to do with secondary and so on seen key inside partition (performed before shuffle)
+	- merge function: function of refuce stage (performed after shuffle)
 - sortByKey
+- repartitionAndSortWithinPartition - Takes two func: for partitioning and for sorting. With that you can simulate sort of window functions aggregations
 - union
 - join
 - cogroup
@@ -354,30 +360,38 @@ some_rdd.partitioner.partitionFunc()
 Transformations operations are lazy - they don't compute while called.
 Whole lineage started to compute only when Action operator called
 
+
 ### Architecture
 
-- **Spark Session (Spark Context)** - Main entry point to Spark. It represents connection to Spark Cluster, and contains all information about that particular spark session. Which RDDs you have in that session, accumulators, Broadcast, etc.
+- **Cluster** - 
+- **Spark Session (similar: Spark Context for spark 1.x)** - Main entry point to Spark. It represents connection to Spark Cluster, and contains all information about that particular spark session. Which RDDs you have in that session, accumulators, Broadcast, etc.
 It was context before Spark 2.0 presented. Now Session - more prefreable way. But in general they represent the same thing
-	- **Spark Conf** - It's just configuration object, with wich you can create Spark Context, that you're really need
+	- **Spark Conf** - Configuration object, with wich you can create Spark Context, that you're really need
 - **Worker nodes** - ???
 - **Driver machine** - ???
 - **Executor** - ???
 - **Cluster Machine** - ???
 
+
+### Modes
+
+- **local** - When you launch driver and executors on your local machine
+- **client** - Driver app launched on the same machine of cluster when you run spark-submit command, and then executor created somewhere in cluster, like usual
+- **cluster** - when you can login on random machine, or even don't login to any machine in cluster (with gateway machine, for example), and do spark-submit outside of cluster, and when cluster gets your command - it create driver on random machine. So it's more preferable way to work on loaded environments
+
 ### Caching
 
 Because every time you call the action whole lineage executed, and it also may be needed to perform differnt actions over the same rdd, it's nice to have opportunity to precalculate rdd (perform reads, joins, etc), then save it (cached) and calculate needed actions then, without need to read all data again. You can do that with:
 
-- `persist()` - which is have more options to store data in different ways 
-- `cache()` - more widely used.
+- `cache()` - we can save intermediate results in memory only. more widely used.
+- `persist()` - The only differenct: you have more options where to store data:
 
 You can store cash on different storage levels:
-- memory_only
-- memory_and_disk
-- memory_only_ser (serialized)
-- memory_and_disk_ser
-- disk_only
-- ...
+- MEMORY_ONLY
+- MEMORY_AND_DISK
+- MEMORY_ONLY_SER (serialized)
+- MEMORY_AND_DISK_SER
+- DISK_ONLY
 
 So you can cash rdd with that command (note, that it will cashed inly when first action will be called)
 ```python
@@ -386,13 +400,51 @@ from pyspark.storagelevel import StorageLevel
 rdd.persist(StorageLevel.MEMORY_ONLY)
 ```
 
-#### Memory Management 
+### Memory Management 
+
+Node level:
+- `yarn.nodemanager.resource.memory-mb` - maximum sum of memory used by all executor containers on each node 
+
+Executor Container (part of the node) level:
+- `spark.yarn.executor.memoryOverhead` - by default it's 7% of `spark.executor.memory` just for yarn needs
+- `spark.executor.memory` - total memory using for execution
+	- `spark.shuffle.memoryFraction` - for shuffle operations
+	- `spark.storage.memoryFraction` - for storaging
 
 - If it will lack of memory, LRU (Last recenty Used) meachanim will be launched, and deletes old RDDs
 - Spark presents three storaging options:
 	- memory storage, serialized Java objects
 	- memory storage, deserialized Java objects
 	- disk storage
+
+
+For better HDFS throughput **recommendation is to use `--executor-cores` = 4-5**, that means that you can run 4-5 tasks in parallel:
+	- **Thin** executor (with low `--executor-core` and `--executor-memory`) will be underutilised
+	- **fat** executor (with high amount of cores and memory) will lead to poor throughput
+
+**Example of resource calculation:**
+Let's say we have cluster of 6 machines, with 16 cores and 64gb ram each
+1. We need to leave 1 core of each machine for OS needs
+2. If we create "medium balanced" executor with 5 cores => will be 3 executors on each machine ((16 cores - 1) / 5 cores)
+3. That means in total it will be 18 executors (6 machine * 3 executors), and since master/driver needs 1 core, we can only set 17 executors option
+4. 63gb (1gb we will left for master) on machine on 3 executors => 21 gb per executor, and with YARN 7% overhead => 19gb per executor
+
+So in total config can look like:
+```
+--executor-cores=5
+--num-executors=17
+--executor-memory=19gb
+```
+
+Also, for optimal reading from HDFS, each file needs to be 128mb size, and it's defaul partition size.
+But for parquet it's [recomennded](https://stackoverflow.com/questions/42918663/is-it-better-to-have-one-large-parquet-file-or-lots-of-smaller-parquet-files) 1gb per file 
+
+
+#### Repartition
+
+On the runtime you can change number of partitions with that commands (both are lazy transformations):
+- `df.repartition("column_name", n_partitions)` - needs number of partitions and the partitioning column(s). When performed, Spark shuffles the partitions across the cluster according to the partitioning column
+- `df.coalesce(num_partitions)` - Coalesce operation doesn’t shuffle data across the cluster — therefore it’s faster than repartition. Also, coalesce can only reduce the number of partitions, it won’t work if trying to increase the number of partitions.
 
 #### Components
 - Spark Application - Application itself, contains Driver and Executors
@@ -403,13 +455,6 @@ rdd.persist(StorageLevel.MEMORY_ONLY)
 
 
 ### Questions
-
-- Difference between persist and cache?<br>
-Cache() and persist() both the methods are used to improve performance of spark computation.<br>
-These methods help to save intermediate results so they can be reused in subsequent stages.<br>
-The only difference between cache() and persist() is:<br>
-**Cache** technique we can save intermediate results in memory only
-**Persist** we can save the intermediate results in 5 storage levels: MEMORY_ONLY, MEMORY_AND_DISK, MEMORY_ONLY_SER, MEMORY_AND_DISK_SER, DISK_ONLY).
 
 - Hpw to create User defined functions?
 ```python
@@ -428,6 +473,8 @@ spark.udf.register('PythonSquareUDF', square)
 ### Links
 
 1. https://youtube.com/playlist?list=PLHJp-gMPHvp9MDqV4qybL1FSBWcwMopcf&si=LVMlrr45tgwxIBja
+2. https://towardsdatascience.com/optimizing-output-file-size-in-apache-spark-5ce28784934c
+3. https://medium.com/datadenys/how-to-improve-clickhouse-table-compression-697ef8f4ccb3
 
 
 ## Kafka
