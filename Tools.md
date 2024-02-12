@@ -372,6 +372,13 @@ It was context before Spark 2.0 presented. Now Session - more prefreable way. Bu
 - **Executor** - ???
 - **Cluster Machine** - ???
 
+#### Components
+- Spark Application - Application itself, contains Driver and Executors
+	- Spark Driver - coordination of whole process
+	- Spark Executor - Execute process
+- Spark Session - Initialize Spark Appliction, and create distibuted system
+- Cluster Manager - Resource manager (YARN, Mesos, K8s, etc)
+
 
 ### Modes
 
@@ -440,19 +447,36 @@ Also, for optimal reading from HDFS, each file needs to be 128mb size, and it's 
 But for parquet it's [recomennded](https://stackoverflow.com/questions/42918663/is-it-better-to-have-one-large-parquet-file-or-lots-of-smaller-parquet-files) 1gb per file 
 
 
-#### Repartition
+#### Dealing with Skewed (disbalanced) data
+
+1. Repartition
 
 On the runtime you can change number of partitions with that commands (both are lazy transformations):
 - `df.repartition("column_name", n_partitions)` - needs number of partitions and the partitioning column(s). When performed, Spark shuffles the partitions across the cluster according to the partitioning column
 - `df.coalesce(num_partitions)` - Coalesce operation doesn’t shuffle data across the cluster — therefore it’s faster than repartition. Also, coalesce can only reduce the number of partitions, it won’t work if trying to increase the number of partitions.
 
-#### Components
-- Spark Application - Application itself, contains Driver and Executors
-	- Spark Driver - coordination of whole process
-	- Spark Executor - Execute process
-- Spark Session - Initialize Spark Appliction, and create distibuted system
-- Cluster Manager - Resource manager (YARN, Mesos, K8s, etc)
+Note, that if there is many rows with one key (data is disbalanced) - repartitionging doesn't really help
+You should choose another key 
 
+2. Combiner
+
+If you will use combiner function, it's still will be skewness, but combiner function will help not to pass it on
+
+3. Salting
+
+It's artificial changing of the key, to make it another key, to spread over different partitions, and then, with second part - remove that changes. In other words it's like two-steps aggregation
+
+key (with many values) -> with round-robin (or so) change key for key_1, key_2, ... key_9, key_1, key_2 ..., So it will be 10 different keys, which will aggregate on different partitions. And then remove that suffix
+
+### Optimizing performance
+
+- Use `coalesce()`
+- Use `cache()`
+- Avoid shuffles
+- Use secondary sort for any TopN operations
+- Prefer `ReduceByKey`, `CombineByKey` over `GroupByKey`, because their use combiner stage
+- Avoid collect results in memory: prefer `take()`, `sample()` over `collect()`
+- Avoid unneccesarry Actions
 
 ### Questions
 
@@ -469,6 +493,13 @@ spark.udf.register('PythonSquareUDF', square)
 2. DAG scheduler splits the graph into multiple stages, the stages are created based on the transformations.
 3. The narrow transformations will be grouped together into a single stage.
 4. The DAG scheduler will then submit the stages into the task scheduler. 
+
+- How many Executors do you need for a 10GB of data on HDFS? How many cores does your executors need, and how many memroy?
+
+1. Understand number of partitions: If it's HDFS, then 128mb recommended, which means 10gb/128=80 partitions for best parallelism
+2. For reading from HDFS it's recommended to use 5 threads for best throughput, so 5 cores of executor would be nice
+3. So it will be 80 / 5 = 16 executors with 5 cores each
+4. if each partition weight 128 mb, it's nice to have 4x reserve, which is 512mb, and for 5 cores it will be around 3gb ram per executor
 
 ### Links
 
