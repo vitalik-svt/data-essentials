@@ -399,7 +399,7 @@ Iterator must have `__iter__` methods, which returns self, so Iterator is Iterab
 you can't define tuple comprehention, it need to be mabe like
 `tuple([x for x in range(i, j)])`
 
-### Generator, Yield
+### Generator
 
 Object, that can be called only once, because it stored only previous 
 So you can restart it, because he is don't know where is start
@@ -411,6 +411,87 @@ Simple generator expresstion:
 
 it returns one x at a time, and don't stored anything else, so it can be used for infinite sequence without consuming memory
 
+### Yield
+
+The **yield** keyword in Python controls the flow of a generator function. This is similar to a return statement used for returning values in Python. However, there is a difference.
+
+When you call a function that has a **yield** statement, as soon as a **yield** is encountered, the execution of the function halts and returns a generator iterator object instead of simply returning a value. **The state of the function, which includes variable bindings, the instruction pointer, the internal stack, and a few other things, is saved.**
+
+In other words, the **yield** keyword will convert an expression that is specified along with it to a generator iterator, and return it to the caller.
+
+If you want to get the values stored inside the generator object, you need to iterate over it. You can iterate over it using for loops or special functions like **next()**.
+
+### Yield from ([stackoverflow](https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-yield-from-syntax-in-python-3-3))
+
+**yield from** establishes a transparent, bidirectional connection between the caller and the sub-generator:
+
+- The connection is "transparent" in the sense that it will propagate everything correctly, not just the elements being generated (e.g. exceptions are propagated).
+- The connection is "bidirectional" in the sense that data can be both sent from and to a generator.
+
+```python
+def reader():
+    """A generator that fakes a read from a file, socket, etc."""
+    for i in range(4):
+        yield '<< %s' % i
+
+def reader_wrapper(g):
+    # Manually iterate over data produced by reader
+    for v in g:
+        yield v
+
+wrap = reader_wrapper(reader())
+for i in wrap:
+    print(i)
+
+# Result
+<< 0
+<< 1
+<< 2
+<< 3
+
+# So, instead of manually iterating over reader(), we can just yield from it
+
+def reader_wrapper(g):
+    yield from g
+
+# And it's like syntacs sugar for for-loop, but let's have a look to other, more important (probably)
+# part of yeild from construction
+# it's sending information INSIDE (!) generator
+
+
+def writer():
+    """A coroutine that writes data *sent* to it to fd, socket, etc."""
+    while True:
+        w = (yield)
+        print('>> ', w)
+
+def writer_wrapper(coro):
+    coro.send(None)  # prime the coro
+    while True:
+        try:
+            x = (yield)  # Capture the value that's sent
+            coro.send(x)  # and pass it to the writer
+        except StopIteration:
+            pass
+
+w = writer()
+wrap = writer_wrapper(w)
+wrap.send(None)  # "prime" the coroutine
+for i in range(4):
+    wrap.send(i)
+
+# Expected result
+>>  0
+>>  1
+>>  2
+>>  3
+
+# but that also works for wtiter_wrapper!
+
+def writer_wrapper(coro):
+    yield from coro
+
+```
 
 ## Classes, Objects
 
