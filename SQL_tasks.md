@@ -297,3 +297,44 @@ In future it will be more convinient to partitionize table by years, and drop/de
 
 Answer:
 You can concatenate that 30 columns and mashe hash of that concatenation. And group by that hashed field
+
+## Will that query run? 
+
+```sql
+sеlеct * 
+frоm table1 
+grоuр bу id
+```
+
+Answer: No
+
+**Additional question:** In which case that query will run?
+
+Answer: If we have only id column in that table
+
+## Will that query run? 
+
+```sql
+uрdаtе table1 
+sеt fiеld1 = rоw_numbеr() frоm table1
+```
+
+Answer: No, because row_number() can be accessible only in select, not in set. Also, it didn't finished syntactically
+
+
+## Will that query run? 
+
+```sql
+sеlеct * frоm table1
+whеrе null = null 
+   оr null <> null 
+   оr 123 <> null 
+   оr null is null
+```
+
+Answer: yes, because of last condition. Other conditions will return either False, or None, because None can be compared only with None, by using is/is not 
+
+
+
+
+

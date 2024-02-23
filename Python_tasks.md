@@ -118,10 +118,96 @@ best_profit = Solution.best_margin(stocks)
 print(best_profit)
 ```
 
-Дан временной ряд с историей изменения стоимости акции по дням. 
-Необходимо выбрать день покупки и день продажи так, чтобы максимизировать профит от такой сделки, и вернуть размер выручки. 
-Если невозможно провернуть сделку с профитом, то вернуть 0.
+## What that code will return?
 
+```sql
+len(' '.join(list(map(str, [0, 1]))))
+```
+
+Answer: 3 (because it's len of `0 1` string)
+
+
+## What print will return?
+
+```sql
+a = {
+  True : 'a', 
+  1 : 'b', 
+  '1' : 'c', 
+  1.0 : 'd'
+}
+
+print(a[True])
+```
+
+Answer:
+
+print will return 'd'. Because python will consider True, 1 and 1.0 as the same key (because they have similar hashes). So while dict will be constructed, at first, interpreter will add True:'a' pair, than 1:'b' pair will be replace first pair, as it would be update. But what's important here: python only replace value ('a' -> 'b'), but key will be the same, because why do you need to rewrite it, because Python thinks, that it's the same key, so in the end we will have that dict:
+
+```python
+a = {
+  True : 'd', 
+  1 : 'b', 
+}
+```
+
+n.b., that in python 3.7+ order of keys guaranteed
+
+
+## How that works?
+
+```python
+a, b = b, a
+```
+
+In the nutshell - `a, b` it's similar as `(a, b)`, so we see just two tuples here
+
+Remember return from functions?
+```python
+def func()
+    return hue, moe
+
+
+a = func()
+
+print(type(a))
+>> tuple
+```
+
+Similar mechanism here
+
+## What that code will return?
+
+```python
+a = 'Hello'
+msg = list(a)
+print(msg)
+```
+
+Answer: it returns `[‘H’, ‘e’, ‘l’, ‘l’, ‘o’]`
+
+Question 2: Add 3 symbols, so print will return regular 'hello' string
+
+Answer:
+```python
+a = 'Hello'
+msg = list([a])   # Here we make list of one elment, so list() gets another list as input iterable, but with one element, not string, which is iterable of 5 elements
+print(*msg)  # Here we unpack iterable
+```
+
+Question 3: Add 2 symbols, so print will return regular 'hello' string
+
+Answer:
+```python
+a = 'Hello', # here we add comma, and create tuple (but without parenthesys)
+# becase python consider 'a, b' as '(a, b)'
+msg = list([a])
+print(*msg)  # Here we unpack iterable
+```
+
+## How to create class without class word
+
+Answer: type
 
 
 
