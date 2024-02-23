@@ -493,6 +493,32 @@ def writer_wrapper(coro):
 
 ```
 
+### Clousers ([habr](https://habr.com/ru/amp/publications/781866/))
+
+Closure - it's function, that **defined** and **returned** by other function. And also closure have access to objects and values inside parent scope, regarding from where you call clouser
+
+```python
+def outers(): 
+    n = 2
+
+    def closure(): 
+        return n ** 2 
+    return closure
+
+
+closure_foo = outers()      # call main func. it will return closure, and assigns to variable
+print(closure_foo)          # <function outers.<locals>.closure at 0x7f254d6fe170> 
+num = closure_foo()         # call closure and assigns to variable
+
+print(num)                  # first option to call closure
+>> 4 
+
+print(outers()())           # second option to call closure
+>> 4
+```
+
+See, function still have access to `n` variable, despite it out of their scope
+
 ## Classes, Objects
 
 ### OOP Concepts
