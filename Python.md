@@ -969,27 +969,21 @@ g.size                              # File count is automatically updated
 
 Besides showing how descriptors can run computations, this example also reveals the purpose of the parameters to __get__(). The self parameter is size, an instance of DirectorySize. The obj parameter is either g or s, an instance of Directory. It is the obj parameter that lets the __get__() method learn the target directory. The objtype parameter is the class Directory.
 
-## GIL, Threads, Processes
-
-Async - сам питон в рамках одного треда/процесса управляет «потоками» своего выполнения. Ты пишешь это управление сам
-
-Threading - операционная система создает треды и управляет ими.
-Тяжелая операция. Каждая создает свой интерпретатор (вроде как)
-
-Parallelism:
-
-multiprocessing - несколько ядер со своей памятью и т.д. Истинная параллельность
+## Processes, Threads, AsyncIO  ([nice video about async](https://www.youtube.com/watch?v=iG6fr81xHKA))
 
 **Process** - Independent things, that have (no-shared) separated memory, CPU etc. And it's different Python processes!
 It doesn't make sense to create more processes than cores/machines
 
+**Multiprocessing** - it's Pure parallelism. Each process launch their Python interpreter, and OS place that processes somehow (usually each per core). Processes doesn't share any memory. We have some additional costs, because launch few separate interpreters - quite heavy. Also we limited by number of cores, even we can add more processes, than cores, least will wait for core to get free to start doing something
+
+**Multithreading** - Thread - it's "subprocess" inside one process. But still, switching between threads handles by OS. Also, because of Python have **GIL** - only one thread can be given by Python to OS to launch it at one time. Threads share memory. You can launch some Threads, and amount will be bigger than amount of processes, but still it's relatively heavy operation.
+
 **GIL** - Global Lock Interpreter. It's Service, that let only one Thread execute Python at once.
 
-**Thread** - Launched in cooperative address space, and have shared memory.
-You can use threading library or concurrent.
-Threads in that libraries managed by OS!
+**Async** - It's similar to multithreading, but all ruled by Async framework, and actually you. So all the things happend inside one Process, inside one Thread, but you (and Async framework) "simulate" work of OS. And because of that - adding that coroutines - pretty lightweight operations, and tbh - the only reason why you should use AsyncIO, or other similar frameworks: to build some server, that can handle heavy load, for example, because you can create **thousands of coroutines**
+Also, you can't use regular python libraries, which have **blocking** functions, that just block flow. Regular time.sleep, for example just will block everything. You need to use special asyncio.sleep
 
-**AsyncIO** - It's like threading, but all the thnigs (changes of threads and so on) you need to write by yourself.
+Again: It's like threading, but all the thnigs (changes of threads and so on) you need to write by yourself.
 So while in Multithreading are:
 1 Process and Many threads (that created and maintained by OS)
 
@@ -1002,7 +996,9 @@ Also, it can be used for reducing non-CPU time (IO, like library named, for exam
 
 ### When Multiprocessing, and when Multithreading?
 
-Processing - it's mostly for CPU-comsuming operations, but multithreading - it's for operations, that frquently wait for somthing (I/O, requests)
+Processing - it's mostly for CPU-comsuming operations, but multithreading - it's for operations, that frquently wait for somthing (I/O, requests).
+
+And AsyncIO when you need to do really high amount of things in Parallel (actually, not in parallel, but asyncroniously. So, you try to utlise as much CPU time as possible)
 
 ## Input/Output
 
