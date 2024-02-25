@@ -658,6 +658,55 @@ ab.introduct_yourself('employee')
 "i'm a employee, human being!"
 ```
 
+### Property vs attribute ([stackoverflow](https://stackoverflow.com/questions/7374748/whats-the-difference-between-a-python-property-and-attribute))
+
+
+Properties are a special kind of attribute. Basically, when Python encounters the following code:
+
+```python
+spam = SomeObject()
+print(spam.eggs)
+```
+
+it looks up `eggs` in `SomeObject1`, and then examines `eggs` to see if it has a `__get__`, `__set__`, or `__delete__` metho.
+If it does, its a property, and Python will call the `__get__` method (since we were doing lookup) and return whatever that
+method returns. If it is not a property, then `eggs` is looked up in `spam`, and whatever is found there will be returned.
+
+
+```python
+class A(object):
+    _x = 0
+    '''A._x is an attribute'''
+
+    @property
+    def x(self):
+        '''
+        A.x is a property
+        This is the getter method
+        '''
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        """
+        This is the setter method
+        where I can check it's not assigned a value < 0
+        """
+        if value < 0:
+            raise ValueError("Must be >= 0")
+        self._x = value
+
+>>> a = A()
+>>> a._x = -1
+>>> a.x = -1
+Traceback (most recent call last):
+  File "ex.py", line 15, in <module>
+    a.x = -1
+  File "ex.py", line 9, in x
+    raise ValueError("Must be >= 0")
+ValueError: Must be >= 0
+```
+
 ### What is abstract Class?
 
 It's class, from which we can't create an object. Usually we need it to create some 'super' class and create there some needed methods, to necessarily need to be implemented by child classes
