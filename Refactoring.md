@@ -1,47 +1,14 @@
-# Refactoring
-
-
-## Review algorithm
-
-Me, personnaly divide review to three parts:
-
-1. **Is code working as it is?**
-	*In standalone environment. There i need to check all logic inside functions and so on. It's similar to unit-testing, and in test covered production maybe not so nessecary, because we assume, that code tested before pull request*
-
-2. **Will code be working in production environment?**
-	*How that code will interact with other things in production?*
-
-	- Is the pipeline idempotent? 
-	- Are they incorrectly using "current time" in the pipeline?
-	- Are they using date > "start date" without a corresponding date < "end date" 
-	- Are they doing JOINs with SCD (slowly changing dimension) tables that don't have the needed timeframe filters
-
-	- Is the data model efficient? 
-	- Is there any excessive data duplication?
-	- Could they leverage complex data types for a better model?  
-	- Are the column names reasonable and understandable? 
-
-	- Do they have data quality checks at all?
-	- Are they checking for NULLs, duplicates, and malformed values?
-	- Are they doing row count anomaly detection?  
-	- Will any of these quality checks be excessively noisy?
-
-	- Can pipeline be less costy (in cloud solutions)?
-
-3. **Refactoring**
-	*Can code be cleaner, with the same functionality?*
-
-
+# Refactoring algorithm
 
 ## Refactoring tips
 
-0. **Use type hints everywhere!**
+- **Use type hints everywhere!**
 
-0. **Split functionality to functions for convinient maintaining and testing**
+- **Split functionality to functions for convinient maintaining and testing**
 
-0. **Add testing wherever you can**
+- **Add testing wherever you can**
 
-1. Merge nested if-statements:
+- Merge nested if-statements:
 
 ```python
 if a:
@@ -53,7 +20,7 @@ if a and b:
     pass
 ```
 
-2. Use any/all instead of a loop
+- Use any/all instead of a loop
 
 ```python
 numbers = [-1, -2, -4, 0, 3, -7]
@@ -67,7 +34,27 @@ for n in numbers:
 has_positives = any(n > 0 for n in numbers)
 ```
 
-3. Pull statements/constants out of loop
+- Use tuple and other immutables in def args!
+
+Usually, you don't want hide logic of changing the data inplace, because you can forget about it at it maybe unpredictable
+
+```python
+my_list = []
+
+# instead of
+def appender(lst=[], some):
+    lst.append(some)
+
+appender(my_list, 42)
+
+# do 
+def appender(tpl=Iterable, some):
+    return tuple(tpl) + (some,)
+
+my_list = appender(my_list, 42)
+``` 
+
+- Pull statements/constants out of loop
 
 ```python
 for building in buildings:
@@ -80,7 +67,7 @@ for building in buildings:
     addresses.append(building.street_address, city)
 ```
 
-4. Try to remove variables, that used only once to be returned after.
+- Try to remove variables, that used only once to be returned after.
 
 ```python
 def state_attributes(self):
@@ -100,7 +87,7 @@ def state_attributes(self):
     }
 ```
 
-5. Add a guard clause
+- Use a guard clause
 
 ```python
 def should_i_wear_this_hat(self, hat):
@@ -133,7 +120,7 @@ def should_i_wear_this_hat(self, hat):
         return is_stylish
 ```
 
-6. Movs assignments closer to their usage
+- Movs assignments closer to their usage
 
 ```python
 def should_i_wear_this_hat(self, hat):
@@ -167,7 +154,7 @@ def should_i_wear_this_hat(self, hat):
         # return is_stylish
 ```
 
-7. Sumplify check of sequence len. len(of zero len) will return False
+- Sumplify check of sequence len. len(of zero len) will return False
 
 ```python
 if len(list_of_hats) > 0:
@@ -178,7 +165,7 @@ if list_of_hats:
     hat_to_wear = choose_hat(list_of_hats)
 ```
 
-8. Use enumerate, for god sake
+- Use enumerate, for god sake
 
 ```python
 for i in range(len(players)):
@@ -189,7 +176,7 @@ for i, player in enumerate(players, start=1): # also you can use additional star
     print(i, player)
 ```
 
-9. Simplify condition into return statement
+-  Simplify condition into return statement
 
 ```python
 def function():
@@ -202,7 +189,7 @@ def function():
     return isinstance(a, b) or issubclass(b, a)
 ```
 
-10. Merge duplicated blocks into one
+- Merge duplicated blocks into one
 
 ```python
 def process_payment(payment, currency):
@@ -238,7 +225,7 @@ def process_payment(payment, currency):
         process_international_payment(payment)
 ```
 
-11.Replace yield inside for loop with yield from
+- Replace yield inside for loop with yield from
 
 This is an advanced tip if you are already familiar with generators. 
 One little trick that often gets missed is that Python’s yield keyword has a corresponding yield from for iterables.
@@ -254,32 +241,3 @@ def get_content(entry):
 def get_content(entry):
     yield from entry.get_blocks()
 ```
-
-
-## System Design
-
-- You drive the interview!
-- You should clarify all requirements in the start!
-
-    dev part:
-    - How many users/data in the system?
-    - is that system for company, or regional, global?
-    - is data availiability crucial?
-    - what about data latency?
-    - OLTP/OLAP share
-    - what features should be implemented?
-    
-    data part:
-    - what is source of data?
-    - Is it need to be batch or streaming? with which frequency, if batch?
-    - size of data?
-    - is it migration to cloud, or new system? 
-    - who will use that system? BA, DS? 
-
-- You should continiously ask, if interviewer understand your way of thinkning!
-
-### links
-- https://www.youtube.com/watch?v=Be7INI_U6GY
-- https://github.com/donnemartin/system-design-primer
-- Youtube channel "system design interview"
-
