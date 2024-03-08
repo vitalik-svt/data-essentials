@@ -707,6 +707,56 @@ Traceback (most recent call last):
 ValueError: Must be >= 0
 ```
 
+### Attribute (Obj vs Class) and Property (Obj vs Class)
+
+```python
+class Class:
+
+    attr = 'data attribute of class'
+
+    @property
+    def prop(self):
+        return('property value of class')
+
+obj = Class()
+vars(obj)
+# {} - __dict__ of object are empty
+obj.attr
+# 'data attribute of class' - because object itself doesn't have that attribute
+obj.attr = 'data attribute of object'
+print(vars(obj))
+# {'attr': 'data attribute of object'} - because we create object attribute
+obj.attr
+#'data attribute of object' - and we can call it
+Class.attr
+#'data attribute of class' - and class attribute will be the same
+
+# So here we've seen, how object attributes redefines class attributes
+# Properties works differently!
+# Property - it's property of Class, first of all
+# So when you call obj.attr, interpreter will seek it in object, then in class, then in superclass
+# But when you call obj.prop, interpreter will seek it in Class first, and then in Object!
+
+# lets see
+
+Class.prop
+# <property object as 0x1072b7408> - it's just object of property
+obj.prop
+# 'property value of class' - when we call property from object, it calculates
+obj.prop = 'property value of object'
+# AttributeError: can't set attribute - we cant create attribute, and we also cant redefine property, because there is no 
+# property set method in our class 
+obj.__dict__['prop'] = 'property value of object'
+# but we can sett attribute (not property) that way, without calling property by obj.prop
+vars(obj)
+# {'attr': 'data attribute of object', 'prop': 'property value of object'} - we call it prop, but it's attribute of object!
+obj.prop
+# 'property value of object' - it's just value of attribute!
+Class.prop = 'property value of class_new, but tbh its attribute'
+# we can try to reset property of Class, but that will just delete property, and create regular attribute of Class
+
+```
+
 ### What is abstract Class?
 
 It's class, from which we can't create an object. Usually we need it to create some 'super' class and create there some needed methods, to necessarily need to be implemented by child classes
