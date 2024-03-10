@@ -6,7 +6,7 @@
 
 - Tell me about yourself
 - Why our company?
-- What inspires you, how you choosing your next project?
+- What inspires you? how you choosing your next project?
 - Why should we hire you?
 - What was your biggest challenge, or more remarkable project?
 - What you would changed in your previos project with knowledge, which you have now
