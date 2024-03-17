@@ -59,7 +59,11 @@ It also can be understood as json, but serialised in binary (which is oversimpli
 
 ### Thrift
 
+pass
+
 ### ProtoBuf
+
+pass
 
 ## Columnar formats
 
