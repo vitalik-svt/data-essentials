@@ -65,11 +65,11 @@ It also can be understood as json, but serialised in binary (which is oversimpli
 
 ### ORC (Optimized Row Columnar) ([docs](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+ORC))
 
-![orc](./images/orc_1_1.png)
+![orc](./images/orc_1_1.webp)
 
 ORC it's pure Columnar storaging format
 
-[Article about ORC](https://medium.com/data-and-beyond/exploring-the-orc-file-format-advantages-use-cases-and-best-practices-for-data-storage-and-79c607ee9289#:~:text=An%20ORC%20(Optimized%20Row%20Columnar,operations%20like%20filtering%20and%20aggregation.)
+[Article about ORC](https://medium.com/data-and-beyond/exploring-the-orc-file-format-advantages-use-cases-and-best-practices-for-data-storage-and-79c607ee9289)
 
 ORC **optimized for reading**, mostly, because it has predicate pushdown, which allows Spark to skip over irrelevant data when querying large datasets.
 
@@ -86,7 +86,7 @@ Parquet uses Columnar (hybrid) storaging format
 
 **And example:**<br>
 
-![Parquet file representation](./images/parquet_1_.png)
+![Parquet file representation](./images/parquet_1_1.gif)
 
 - 4-byte magic number "PAR1"
 - Row-group 1 (128mb by default)
@@ -170,7 +170,7 @@ Arrow's in-memory columnar data format is an out-of-the-box solution to these pr
 ![before](./images/arrow_1_1.png)
 ![after](./images/arrow_1_2.png)
 
-[video about arrow from creator](https://www.youtube.com/watch?v=R4BIXbfKBtk&t=548s)
+[Video about arrow from creator](https://www.youtube.com/watch?v=R4BIXbfKBtk&t=548s)
 
 
 ### Apache Hoodie ([docs](https://hudi.apache.org/docs/concepts/))
@@ -183,11 +183,11 @@ There is two basic principles of how hudi store data:
 
 **Copy on Write**: Data is stored in a columnar format (Parquet), and each update creates a new version of files during a write. COW is the default storage type. So all the things happend on **writer side**
 
-![cow](./images/hudi_cow_1_1.png)
+![COW](./images/hudi_cow_1_1.webp)
 
 **Merge on read**: Data is stored using a combination of columnar (Parquet) and row-based (Avro) formats. Updates are logged to row-based delta files and are compacted as needed to create new versions of the columnar files.
 
-![mor](./images/hudi_mor_1_1.png)
+![MOR](./images/hudi_mor_1_1.webp)
 
 **COW vs MR**:
 So, in a nutshell, COW have bigger latency on writing, but faster reading. MOR - vice-versa.
