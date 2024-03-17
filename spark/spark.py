@@ -442,20 +442,20 @@ class Example_three:
 
 if __name__ == '__main__':
 
-	# example_one = Example_one([10, 9, 8, 11, 12, 14, 2, 1])
-	# example_one.sequential_run()
-	# example_one.spark_run_old()
-	# example_one.spark_run()
+	example_one = Example_one([10, 9, 8, 11, 12, 14, 2, 1])
+	example_one.sequential_run()
+	example_one.spark_run_old()
+	example_one.spark_run()
 
-	# example_two = Example_two('./data/weather.csv')
-	# example_two.spark_run_old()
+	example_two = Example_two('./data/weather.csv')
+	example_two.spark_run_old()
 
 	example_three = Example_three()
-	# example_three.spark_run_first()
-	# example_three.spark_run_transformations()
-	# example_three.spark_run_actions()
-	# example_three.words_counter('./data/ebook.txt')
-	# example_three.spark_joins('./data/weather.csv', './data/zips_city.csv')
+	example_three.spark_run_first()
+	example_three.spark_run_transformations()
+	example_three.spark_run_actions()
+	example_three.words_counter('./data/ebook.txt')
+	example_three.spark_joins('./data/weather.csv', './data/zips_city.csv')
 	example_three.broadcast_joins('./data/nyse_daily.tsv', './data/nyse_dividends.tsv')
 
 
