@@ -69,7 +69,7 @@ pass
 
 ### ORC (Optimized Row Columnar) ([docs](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+ORC))
 
-![orc](./images/orc_1_1.webp)
+![orc](./images/tf_orc_1_1.webp)
 
 ORC it's pure Columnar storaging format
 
@@ -90,7 +90,7 @@ Parquet uses Columnar (hybrid) storaging format
 
 **And example:**<br>
 
-![Parquet file representation](./images/parquet_1_1.gif)
+![Parquet file representation](./images/tf_parquet_1_1.gif)
 
 - 4-byte magic number "PAR1"
 - Row-group 1 (128mb by default)
@@ -122,7 +122,7 @@ Parquet uses Columnar (hybrid) storaging format
 	- row-group 
 	- column metadata start locations
 
-![Parquet Architecture Again](./images/parquet_1_2.gif)
+![Parquet Architecture Again](./images/tf_parquet_1_2.gif)
 
 **Parquet has 6 encoding schemes, but there basic:** <br>
 
@@ -171,11 +171,18 @@ Without a standard columnar data format, every database and language has to impl
 
 Arrow's in-memory columnar data format is an out-of-the-box solution to these problems. Systems that use or support Arrow can transfer data between them at little-to-no cost. Moreover, they don't need to implement custom connectors for every other system. On top of these savings, a standardized memory format facilitates reuse of libraries of algorithms, even across languages.
 
-![before](./images/arrow_1_1.png)
-![after](./images/arrow_1_2.png)
+![before](./images/tf_arrow_1_1.png)
+![after](./images/tf_arrow_1_2.png)
 
 [Video about arrow from creator](https://www.youtube.com/watch?v=R4BIXbfKBtk&t=548s)
 
+## Data lakehouse formats
+
+It's crucial to understand, that formats, listed below it's not programs, but it's not only data formats.
+It's combination of file format itself + set of APIs to different languagaes, to operate with that formats.
+So file in standalone mode - it's not enough
+
+In other hand, there is no compute, or some daemon running processes, to manipulate with that formats - every optimization done by that API/Convention, while you actually "call" to compute that files
 
 ### Apache Hoodie ([docs](https://hudi.apache.org/docs/concepts/))
 
@@ -187,11 +194,11 @@ There is two basic principles of how hudi store data:
 
 **Copy on Write**: Data is stored in a columnar format (Parquet), and each update creates a new version of files during a write. COW is the default storage type. So all the things happend on **writer side**
 
-![COW](./images/hudi_cow_1_1.webp)
+![COW](./images/tf_hudi_cow_1_1.webp)
 
 **Merge on read**: Data is stored using a combination of columnar (Parquet) and row-based (Avro) formats. Updates are logged to row-based delta files and are compacted as needed to create new versions of the columnar files.
 
-![MOR](./images/hudi_mor_1_1.webp)
+![MOR](./images/tf_hudi_mor_1_1.webp)
 
 **COW vs MR**:
 So, in a nutshell, COW have bigger latency on writing, but faster reading. MOR - vice-versa.
@@ -216,9 +223,9 @@ MOR tables can take: Snapshot, Time Travel, Incremental and Read optimized queri
 
 And there are examples for each type of table:
 
-![snapshot vs incremental for COW](./images/hudi_cow_query_1_1.png)
+![snapshot vs incremental for COW](./images/tf_hudi_cow_query_1_1.png)
 
-![snapshot vs incremental for MOR](./images/hudi_mor_query_1_1.png)
+![snapshot vs incremental for MOR](./images/tf_hudi_mor_query_1_1.png)
 
 [Article about different query types](https://medium.com/@simpsons/different-query-types-with-apache-hudi-e14c2064cfd6)
 
@@ -251,10 +258,44 @@ And there are examples for each type of table:
 
 [AWS blog about hudi + glue](https://aws.amazon.com/blogs/big-data/part-1-get-started-with-apache-hudi-using-aws-glue-by-implementing-key-design-concepts/)
 
-### Apache Iceberg
+[DeepDive video about Hudi](https://www.youtube.com/watch?v=nGcT6RPjez4)
+[Hudi QuickStart demo](https://hudi.apache.org/docs/docker_demo)
+[Hudi+PySpark example](https://medium.com/@sagarlakshmipathy/a-beginners-guide-to-apache-hudi-with-pyspark-part-1-of-2-8a4e78f6ad2e)
+[Getting started with Hudi](https://datacouch.medium.com/getting-started-with-apache-hudi-711b89c107aa)
+[Another one](https://medium.com/walmartglobaltech/a-beginners-guide-to-using-apache-hudi-for-data-lake-management-6af50ade43ad)
 
-pass
+### Apache Iceberg ([docs](https://iceberg.apache.org/spec/#overview))
+
+First of all engine needs a data catalog.
+It can be hive, for example, where latest path to Metadata file is stored.
+
+All engine need that type of files in "Metadata" folder:
+- Metadata file (core json file): Stores metadata about table in certain point in time. 
+	- conatins: table_uuid, location, schema, partitions, current_snapshot, snapshots (list of manifests)
+- Manifests list (list of manifest and short statistic about them in avro format)
+	- contains: manifest path, snaphsot_id which manifest belongs to, partitions spec and info
+- Manifest (conatains list of stats about data files, in avro format)
+	contains: file_path, file_format(parquet by default), partition, count(), null_value_stats, lower_bounds, upper_bounds for each column
+- Data file (pqrauet)
+
+**Reading**: read metastore -> read metadata -> manifests list - > manifests -> data files
+**Writing**: write to data file -> change manifest -> change manifest list ... -> change metadata file -> change metastore
+
+![metadata overview](./images/tf_iceberg_1_1.png)
+
+**ACID**:
+So, while each writing changes whole metadata, and we change our metastore each time (we point to newer version) in last order, and it can be happen only if all previous process goes well, that give us **ACID** write transactions, because, if transaction fails on lower levels - it didn't change the metadata, and our metastore still will be point on previous (last success) metadata file (which contains last good snapshot)
+
+**Schema Evolution**:
+Because all process looks like COW tables in hudi (each transaction makes new snapshot), and while we keep store previous versions of metadata, and because we store the schema in metadata file - we can just select that time-travel query, and it will go by old path with previous metadata and previous schema, and previous files underneath
+
+
+[Iceberg Qucik Overview from Dremio. Recommend](https://www.youtube.com/watch?v=stJLaIZRcJs)
+[Iceberg Deep Overview playlist from Dremio](https://www.youtube.com/playlist?list=PL-gIUf9e9CCskP6wP-NKRU9VhofMHYjcd)
 
 ### Delta
 
 pass
+
+
+[Hudi vs Delta vs Iceberg comparison](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)
