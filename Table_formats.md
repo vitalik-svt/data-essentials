@@ -77,7 +77,7 @@ ORC it's pure Columnar storaging format
 
 ORC **optimized for reading**, mostly, because it has predicate pushdown, which allows Spark to skip over irrelevant data when querying large datasets.
 
-### Apache Parquet ([docs](https://parquet.apache.org/docs/file-format/))
+### Apache Parquet ([docs](https://parquet.apache.org/docs/file-format/), [overview](https://learncsdesigns.medium.com/understanding-apache-parquet-d722645cfe74))
 
 Parquet uses Columnar (hybrid) storaging format
 
@@ -178,15 +178,36 @@ Arrow's in-memory columnar data format is an out-of-the-box solution to these pr
 
 ## Data lakehouse formats
 
-It's crucial to understand, that formats, listed below it's not programs, but it's not only data formats.
-It's combination of file format itself + set of APIs to different languagaes, to operate with that formats.
-So file in standalone mode - it's not enough
+Basically, data lakehouses consists from several components:
+- Compute engine - Program, that perform all operations
+- Metadata - Catalog to effectively manipulate with our files in lake
+- Table format - Basic approach and API to manipulate with our files
+- File format - Actually phycicall files (can be considered as part of Table format)
+- Storage layer - Where our files are actually stored
 
-In other hand, there is no compute, or some daemon running processes, to manipulate with that formats - every optimization done by that API/Convention, while you actually "call" to compute that files
+We will focus right now on table format
+
+It's crucial to understand, that formats, listed below it's not some programs, or data formats (like parquet, csv, etc).
+It's **Table format**, which is combination of file format itself + set of APIs to different languagaes, to operate with that format.
+So just a file - it's not enough.
+
+What table format it is:
+- Specifiaction/Standard: Basic approach of how to manipulate with some files (most table formats use parquets for actually store data)
+- Set of APIs for different languages, that perform that approach
+
+What table format isn't:
+- It's not storage engine. You don't store files "in iceberg", for example. You store your data "with iceberg (approach)"
+- It's not compute engine. Format itself it's not program/damon/process or somethin - every optimization done by that API/Convention, while you actually "call" to compute that files.
+
+
+
+### Hive
+
+Stores files in directories and subdirectories.
+directory represents a table
+And each subdirectory is partition of that table
 
 ### Apache Hoodie ([docs](https://hudi.apache.org/docs/concepts/))
-
-it's not file format (because Hudi stores data in Parquets), but it's data lake building framework.
 
 #### COW vs MOR storage models
 
@@ -264,19 +285,40 @@ And there are examples for each type of table:
 [Getting started with Hudi](https://datacouch.medium.com/getting-started-with-apache-hudi-711b89c107aa)
 [Another one](https://medium.com/walmartglobaltech/a-beginners-guide-to-using-apache-hudi-for-data-lake-management-6af50ade43ad)
 
-### Apache Iceberg ([docs](https://iceberg.apache.org/spec/#overview))
+### Apache Iceberg ([docs](https://iceberg.apache.org/spec/#overview), [study resources](https://www.dremio.com/blog/apache-iceberg-101-your-guide-to-learning-apache-iceberg-concepts-and-practices/), [hands-on exapmple](https://youtube.com/playlist?list=PL-gIUf9e9CCuPu4Y-YgiHkqvmolS2YS2Y&si=HrpXUF5W0uqt9XLu))
 
 First of all engine needs a data catalog.
 It can be hive, for example, where latest path to Metadata file is stored.
 
+![file architecture](./images/tf_iceberg_1_0.png)
+
 All engine need that type of files in "Metadata" folder:
-- Metadata file (core json file): Stores metadata about table in certain point in time. 
-	- conatins: table_uuid, location, schema, partitions, current_snapshot, snapshots (list of manifests)
-- Manifests list (list of manifest and short statistic about them in avro format)
-	- contains: manifest path, snaphsot_id which manifest belongs to, partitions spec and info
-- Manifest (conatains list of stats about data files, in avro format)
-	contains: file_path, file_format(parquet by default), partition, count(), null_value_stats, lower_bounds, upper_bounds for each column
-- Data file (pqrauet)
+- **Metadata file** (core json file): Stores metadata about table in certain point in time. 
+	- table_uuid
+	- location
+	- schema
+	- partition-spec
+	- current_snapshot_id
+	- snapshots: list of pairs {snapshot_id, manifest_list}
+
+- **Manifests list** (Basically it's snapshot of table (list of files that belong to table) in moment in time. list of manifest and short statistic about them in avro format)
+	- manifest_path
+	- added_snaphsot_id, which manifest belongs to
+	- partition_spec_id, that we can use in our query
+	- partitions: list of partition_info 
+	
+- **Manifest** (conatains list of stats about data files, in avro format)
+	- file_path
+	- file_format(parquet by default)
+	- partition: part-field, data_type, data_value
+	- record_count
+	- null_value_stats: [{column1: num_of_nulls}, {column2: num_of_nulls}]
+	- lower_bounds: [{column1: lower_bound}, {column2: lower_bound}]
+	- upper_bounds: [{column1: upper_bound}, {column2: upper_bound}]
+
+- **Data file** (parquet)
+
+![creation of files](./images/ttf_iceberg_1_2.png)
 
 **Reading**: read metastore -> read metadata -> manifests list - > manifests -> data files
 **Writing**: write to data file -> change manifest -> change manifest list ... -> change metadata file -> change metastore
@@ -287,11 +329,75 @@ All engine need that type of files in "Metadata" folder:
 So, while each writing changes whole metadata, and we change our metastore each time (we point to newer version) in last order, and it can be happen only if all previous process goes well, that give us **ACID** write transactions, because, if transaction fails on lower levels - it didn't change the metadata, and our metastore still will be point on previous (last success) metadata file (which contains last good snapshot)
 
 **Schema Evolution**:
-Because all process looks like COW tables in hudi (each transaction makes new snapshot), and while we keep store previous versions of metadata, and because we store the schema in metadata file - we can just select that time-travel query, and it will go by old path with previous metadata and previous schema, and previous files underneath
+Because all process looks like COW tables in hudi (each transaction makes new snapshot), and while we keep store previous versions of metadata, and because we store the schema in metadata file - we can just perform query with some time-travel where predicat, and it will go by old path with previous metadata and previous schema, and previous files underneath
 
+**Partition Evolution**: Particularly in Iceber you can repartition your table without actually moving the files, because metadata written in files particullary, and you don't have to move them from folder to folder (like in general hive approach)
+
+**Hidden partitioning**: If in our source data we have timestamp column, and if we want to partition regular parquets or so by date, we should physically create additional "date" column to partition by.
+But in Iceberg you can use function to do that, and not to add additional column.
+Which is more convinient to use
+
+```sql
+create table catalog.db.events (
+	id 		bigint,
+	value 	varchar,
+	ts 		timestamp,
+	-- dt  	date    <- no longer need that in inceberg
+)
+--partitioned by (dt); <- no longer need that in inceberg
+
+using Iceberg
+Partitioned by (date(ts));
+
+-- and then just select
+select id, value, ts
+from catalog.db.events
+where 1=1
+	-- and dt between '2024-01-01' and '2024-02-01' <- no longer need that in inceberg
+	and ts between '2024-01-01' and '2024-02-01'
+```
+
+**COW vs MOR**
+
+Actually, Iceberg, has their MOR tables too, despite that it seemd (based on architecture pictures), that it's always COW tables. And by default thay are all COW, yes.
+
+But Iceberg can add small "transactional files", to use them in MOR method, par example:
+- **Position delete**: it's file with data filename and rownumber of rows, that need to be deleteed in that file. Which is slower, while you write that file, because you need to write all the row numbers
+- **Equality delete**: it's column and value, that should be deleted. Which is faster on write, because you only use predicate value, but it's slower on read, because you need to compare that value with all of the row
+
+All tables are COW by default, but you can change few settings to make them MOR:
+- For update queries: write.update.mode
+- For delete queries: write.delete.mode
+- For merge  queries: write.merge.mode 
+
+```sql
+create table catalog.db.events (
+	id 		bigint,
+	value 	varchar,
+	ts 		timestamp,
+) tblproperties (
+'write.update.mode'='copy-on-write',
+'write.delete.mode'='merge-on-read'
+)
+using Iceberg
+Partitioned by (date(ts));
+```
+
+**Table settings**
+- Parquet vectorization - Change behaviour of how rows read (default off, but better turn it on)
+- Write format
+- Compression format - zstd, brotil, lz4, gzip, snappy, uncompressed (default gzip)
+- Delete old metadata files - on/off and TTL (number of last files to keep)
+- Column metric tracking - you can choose which only columns metadata you want to track and keep. To not lose compute for wide tables on some useless columns. Also you can choose which partiularly stats you want to track
+
+**Maintaining Tables**
+- Set TTL of snapshot (to delete old files)
+- Expire snapshots manually with `call prod.system.expire_snapshots(table, older_than, retain_last)`
+- Rewriting data files and Manifests for Compaction (basically for reordering) `Call catalog_name.system.rewrite_data_files(table, strategy, sort_order)` and `Call catalog_name.system.rewrite_manifests(table)`
+- Delete Orphan files (from unsecceseful ACID jobs, where files changed, but meta - not) `Call catalog_name.system.remove_orphan_files(table, location)`
 
 [Iceberg Qucik Overview from Dremio. Recommend](https://www.youtube.com/watch?v=stJLaIZRcJs)
-[Iceberg Deep Overview playlist from Dremio](https://www.youtube.com/playlist?list=PL-gIUf9e9CCskP6wP-NKRU9VhofMHYjcd)
+[Iceberg 101 Overview playlist from Dremio](https://www.youtube.com/playlist?list=PL-gIUf9e9CCskP6wP-NKRU9VhofMHYjcd)
 
 ### Delta
 
