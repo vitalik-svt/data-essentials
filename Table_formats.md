@@ -426,6 +426,4 @@ But second one, check if there is already 00002.json in logs, and if it is - it 
 [spark optimization from databricks](https://www.youtube.com/watch?v=daXEp4HmS-E)
 [delta lake (on russian)](https://www.youtube.com/watch?si=ReX58B4duoLPpqaD&v=znVE6fpQqAU&feature=youtu.be)
 
-
-
 [Hudi vs Delta vs Iceberg comparison](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)

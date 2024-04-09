@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 
+# ide stuff
+.idea/
+.vscode/
+
 # MACOS
 .DS_Store
 
