@@ -402,6 +402,7 @@ Partitioned by (date(ts));
 
 It's similar to Iceberg in some way: it's just parquets + logs/transactions
 
+```
 my_table
 ├── delta_log				# transaction log
 │   ├── 00000.json			# table version
@@ -411,6 +412,7 @@ my_table
 │   ├── file2.parquet		# table version            
 │   └── file3.parquet 
 └── ...
+```
 
 **Atomicity:** Change to the table stored in logs. For example:
 00000.json can contain (1. add file1.parquet to the table, 2. add file2.parquet to the table).
@@ -419,11 +421,10 @@ Each json in log call commit there
 Delta lake use optimistic concurrency, which mean, if two processes both try to create 00002.json, only one will succed.
 But second one, check if there is already 00002.json in logs, and if it is - it just check that commit, and if nothing changed (schema of the table, for example, or some other things that can affect our latest transaction) it's just increase the number of that transaction, and write it (00003.json)
 
-[databricks delta lake overview](https://www.youtube.com/watch?v=LJtShrQqYZY&pp=ygUKZGVsdGEgbGFrZQ%3D%3D)
-[parquet from databricks](https://www.youtube.com/watch?si=WNrwVqCQ6SnsrB6I&v=1j8SdS7s_NY&feature=youtu.be)
-[delta lake deep dive from databricks](https://www.youtube.com/watch?si=9ZpSYNHDg9726pM6&v=znv4rM9wevc&feature=youtu.be)
-[delta lake 2.0](https://www.youtube.com/watch?si=6S5D9s-2xyBDNb79&v=1TmjPe0mXTY&feature=youtu.be)
-[spark optimization from databricks](https://www.youtube.com/watch?v=daXEp4HmS-E)
-[delta lake (on russian)](https://www.youtube.com/watch?si=ReX58B4duoLPpqaD&v=znVE6fpQqAU&feature=youtu.be)
-
-[Hudi vs Delta vs Iceberg comparison](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)
+[Databricks delta lake overview](https://www.youtube.com/watch?v=LJtShrQqYZY&pp=ygUKZGVsdGEgbGFrZQ%3D%3D)<br>
+[Parquet from databricks](https://www.youtube.com/watch?si=WNrwVqCQ6SnsrB6I&v=1j8SdS7s_NY&feature=youtu.be)<br>
+[Delta lake deep dive from databricks](https://www.youtube.com/watch?si=9ZpSYNHDg9726pM6&v=znv4rM9wevc&feature=youtu.be)<br>
+[Delta lake 2.0](https://www.youtube.com/watch?si=6S5D9s-2xyBDNb79&v=1TmjPe0mXTY&feature=youtu.be)<br>
+[Spark optimization from databricks](https://www.youtube.com/watch?v=daXEp4HmS-E)<br>
+[Delta lake (on russian)](https://www.youtube.com/watch?si=ReX58B4duoLPpqaD&v=znVE6fpQqAU&feature=youtu.be)<br>
+[Hudi vs Delta vs Iceberg comparison](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)<br>
