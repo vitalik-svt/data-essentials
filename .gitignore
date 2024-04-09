@@ -4,6 +4,7 @@ __pycache__/
 
 # ide stuff
 .idea/
+.vscode/
 
 # MACOS
 .DS_Store
