@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# ide stuff
+.idea/
+
 # MACOS
 .DS_Store
 
