@@ -84,8 +84,8 @@ Parquet uses Columnar (hybrid) storaging format
 **So, high-level:**<br>
 
 - Parquet file consits of one or more **Row group** (can be configured by user)
-- **Row group** contains exactly one column chunk per column
-- **Column chunk** contains one or more pages 
+- **Row group** contains exactly one column chunk per column (it's batch of columns)
+- **Column chunk** contains one or more pages (it's part of column data)
 - **Page** it's individible part of parquet
 
 **And example:**<br>
@@ -127,12 +127,12 @@ Parquet uses Columnar (hybrid) storaging format
 **Parquet has 6 encoding schemes, but there basic:** <br>
 
 - Plain
-	- Fixed with: means, that values stored back-to-back. cool for integers, for example:<br>
+	- Fixed width: means, that values stored back-to-back. cool for integers, for example:<br>
 		file example: 1, 5, 6, 3, ...
-	- Non-fixed with: used for different length data (strings). in that case data have length prefix
+	- Non-fixed width: used for different length data (strings). in that case data have length prefix
 		file example: 2, yo, 3, no, 8, hobahoba, ...
 
-- RLE_Dictionary
+- RLE_Dictionary (run-length encoding)
 	- Run-length encoding + bit-packing + dictionary compression
 	- Assumes duplicate and repeated values
 
@@ -198,7 +198,6 @@ What table format it is:
 What table format isn't:
 - It's not storage engine. You don't store files "in iceberg", for example. You store your data "with iceberg (approach)"
 - It's not compute engine. Format itself it's not program/damon/process or somethin - every optimization done by that API/Convention, while you actually "call" to compute that files.
-
 
 
 ### Hive
@@ -401,7 +400,31 @@ Partitioned by (date(ts));
 
 ### Delta
 
-pass
+It's similar to Iceberg in some way: it's just parquets + logs/transactions
+
+my_table
+├── delta_log				# transaction log
+│   ├── 00000.json			# table version
+│   └── 00001.json  
+├── date=2024-01-01        	# partition    
+│   ├── file1.parquet		# table version  
+│   ├── file2.parquet		# table version            
+│   └── file3.parquet 
+└── ...
+
+**Atomicity:** Change to the table stored in logs. For example:
+00000.json can contain (1. add file1.parquet to the table, 2. add file2.parquet to the table).
+Each json in log call commit there
+
+Delta lake use optimistic concurrency, which mean, if two processes both try to create 00002.json, only one will succed.
+But second one, check if there is already 00002.json in logs, and if it is - it just check that commit, and if nothing changed (schema of the table, for example, or some other things that can affect our latest transaction) it's just increase the number of that transaction, and write it (00003.json)
+
+[databricks delta lake overview](https://www.youtube.com/watch?v=LJtShrQqYZY&pp=ygUKZGVsdGEgbGFrZQ%3D%3D)
+[parquet from databricks](https://www.youtube.com/watch?si=WNrwVqCQ6SnsrB6I&v=1j8SdS7s_NY&feature=youtu.be)
+[delta lake deep dive from databricks](https://www.youtube.com/watch?si=9ZpSYNHDg9726pM6&v=znv4rM9wevc&feature=youtu.be)
+[delta lake 2.0](https://www.youtube.com/watch?si=6S5D9s-2xyBDNb79&v=1TmjPe0mXTY&feature=youtu.be)
+[spark optimization from databricks](https://www.youtube.com/watch?v=daXEp4HmS-E)
+[delta lake (on russian)](https://www.youtube.com/watch?si=ReX58B4duoLPpqaD&v=znVE6fpQqAU&feature=youtu.be)
 
 
 [Hudi vs Delta vs Iceberg comparison](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)
