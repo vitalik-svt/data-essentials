@@ -223,8 +223,8 @@ There is two basic principles of how hudi store data:
 **COW vs MR**:
 So, in a nutshell, COW have bigger latency on writing, but faster reading. MOR - vice-versa.
 
-[Table types in Hudi](https://medium.com/@simpsons/different-table-types-in-apache-hudi-datalake-apachehudi-cow-mor-f508c474cb8c)
-[Copy-on-write](https://medium.com/@Eswaramoorthy.P/demystifying-copy-on-write-in-apache-hudi-understanding-read-and-write-operations-3aa274017884)
+[Table types in Hudi](https://medium.com/@simpsons/different-table-types-in-apache-hudi-datalake-apachehudi-cow-mor-f508c474cb8c)<br>
+[Copy-on-write](https://medium.com/@Eswaramoorthy.P/demystifying-copy-on-write-in-apache-hudi-understanding-read-and-write-operations-3aa274017884)<br>
 [COW vs MOR](https://www.onehouse.ai/blog/comparing-apache-hudis-mor-and-cow-tables-use-cases-from-uber-and-shopee)
 
 #### Query types ([docs](https://hudi.apache.org/docs/next/table_types/))
@@ -263,8 +263,8 @@ And there are examples for each type of table:
 - Bucket Index
 - Bucket Index with consistent hashing
 
-[Make upserts faster](https://www.onehouse.ai/blog/top-3-things-you-can-do-to-get-fast-upsert-performance-in-apache-hudi)
-[Bucket index](https://medium.com/@simpsons/speed-up-your-write-latencies-using-bucket-index-in-apache-hudi-2f7c297493dc)
+[Make upserts faster](https://www.onehouse.ai/blog/top-3-things-you-can-do-to-get-fast-upsert-performance-in-apache-hudi)<br>
+[Bucket index](https://medium.com/@simpsons/speed-up-your-write-latencies-using-bucket-index-in-apache-hudi-2f7c297493dc)<br>
 [Simple index](https://www.linkedin.com/pulse/apache-hudi-accelerating-upsert-simple-index-choosing-soumil-shah%3FtrackingId=pmENaqg9Rt6NG6aCzIQ2Eg%253D%253D/?trackingId=pmENaqg9Rt6NG6aCzIQ2Eg%3D%3D)
 
 #### Operation Types ([docs](https://hudi.apache.org/docs/next/write_operations/#operation-types))
@@ -276,13 +276,12 @@ And there are examples for each type of table:
 - Delete partition: deletes entire partition
 - Bulk insert ([article about](https://medium.com/@simpsons/bulk-insert-sort-modes-with-apache-hudi-c781e77841bc)): it's efficient when you deal with huge amoun of data
 
-[AWS blog about hudi + glue](https://aws.amazon.com/blogs/big-data/part-1-get-started-with-apache-hudi-using-aws-glue-by-implementing-key-design-concepts/)
-
-[DeepDive video about Hudi](https://www.youtube.com/watch?v=nGcT6RPjez4)
-[Hudi QuickStart demo](https://hudi.apache.org/docs/docker_demo)
-[Hudi+PySpark example](https://medium.com/@sagarlakshmipathy/a-beginners-guide-to-apache-hudi-with-pyspark-part-1-of-2-8a4e78f6ad2e)
-[Getting started with Hudi](https://datacouch.medium.com/getting-started-with-apache-hudi-711b89c107aa)
-[Another one](https://medium.com/walmartglobaltech/a-beginners-guide-to-using-apache-hudi-for-data-lake-management-6af50ade43ad)
+[AWS blog about hudi + glue](https://aws.amazon.com/blogs/big-data/part-1-get-started-with-apache-hudi-using-aws-glue-by-implementing-key-design-concepts/)<br>
+[DeepDive video about Hudi](https://www.youtube.com/watch?v=nGcT6RPjez4)<br>
+[Hudi QuickStart demo](https://hudi.apache.org/docs/docker_demo)<br>
+[Hudi+PySpark example](https://medium.com/@sagarlakshmipathy/a-beginners-guide-to-apache-hudi-with-pyspark-part-1-of-2-8a4e78f6ad2e)<br>
+[Getting started with Hudi](https://datacouch.medium.com/getting-started-with-apache-hudi-711b89c107aa)<br>
+[Another one](https://medium.com/walmartglobaltech/a-beginners-guide-to-using-apache-hudi-for-data-lake-management-6af50ade43ad)<br>
 
 ### Apache Iceberg ([docs](https://iceberg.apache.org/spec/#overview), [study resources](https://www.dremio.com/blog/apache-iceberg-101-your-guide-to-learning-apache-iceberg-concepts-and-practices/), [hands-on exapmple](https://youtube.com/playlist?list=PL-gIUf9e9CCuPu4Y-YgiHkqvmolS2YS2Y&si=HrpXUF5W0uqt9XLu))
 
@@ -317,7 +316,7 @@ All engine need that type of files in "Metadata" folder:
 
 - **Data file** (parquet)
 
-![creation of files](./images/ttf_iceberg_1_2.png)
+![creation of files](./images/tf_iceberg_1_2.png)
 
 **Reading**: read metastore -> read metadata -> manifests list - > manifests -> data files
 **Writing**: write to data file -> change manifest -> change manifest list ... -> change metadata file -> change metastore
@@ -395,7 +394,7 @@ Partitioned by (date(ts));
 - Rewriting data files and Manifests for Compaction (basically for reordering) `Call catalog_name.system.rewrite_data_files(table, strategy, sort_order)` and `Call catalog_name.system.rewrite_manifests(table)`
 - Delete Orphan files (from unsecceseful ACID jobs, where files changed, but meta - not) `Call catalog_name.system.remove_orphan_files(table, location)`
 
-[Iceberg Qucik Overview from Dremio. Recommend](https://www.youtube.com/watch?v=stJLaIZRcJs)
+[Iceberg Qucik Overview from Dremio. Recommend](https://www.youtube.com/watch?v=stJLaIZRcJs)<br>
 [Iceberg 101 Overview playlist from Dremio](https://www.youtube.com/playlist?list=PL-gIUf9e9CCskP6wP-NKRU9VhofMHYjcd)
 
 ### Delta
@@ -419,12 +418,16 @@ my_table
 Each json in log call commit there
 
 Delta lake use optimistic concurrency, which mean, if two processes both try to create 00002.json, only one will succed.
-But second one, check if there is already 00002.json in logs, and if it is - it just check that commit, and if nothing changed (schema of the table, for example, or some other things that can affect our latest transaction) it's just increase the number of that transaction, and write it (00003.json)
+But second one, check if there is already 00002.json in logs, and if it is - it just check that commit, and if nothing changed 
+(schema of the table, for example, or some other things that can affect our latest transaction) 
+it's just increase the number of that transaction, and write it (00003.json)
+
+![delta table z-ordering](./images/tf_delta_1_0.png)
 
 [Databricks delta lake overview](https://www.youtube.com/watch?v=LJtShrQqYZY&pp=ygUKZGVsdGEgbGFrZQ%3D%3D)<br>
 [Parquet from databricks](https://www.youtube.com/watch?si=WNrwVqCQ6SnsrB6I&v=1j8SdS7s_NY&feature=youtu.be)<br>
 [Delta lake deep dive from databricks](https://www.youtube.com/watch?si=9ZpSYNHDg9726pM6&v=znv4rM9wevc&feature=youtu.be)<br>
-[Delta lake 2.0](https://www.youtube.com/watch?si=6S5D9s-2xyBDNb79&v=1TmjPe0mXTY&feature=youtu.be)<br>
+[Delta lake 2.0 (incl. z-ordering)](https://www.youtube.com/watch?si=6S5D9s-2xyBDNb79&v=1TmjPe0mXTY&feature=youtu.be)<br>
 [Spark optimization from databricks](https://www.youtube.com/watch?v=daXEp4HmS-E)<br>
 [Delta lake (on russian)](https://www.youtube.com/watch?si=ReX58B4duoLPpqaD&v=znVE6fpQqAU&feature=youtu.be)<br>
 [Hudi vs Delta vs Iceberg comparison](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)<br>

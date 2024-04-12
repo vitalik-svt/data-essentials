@@ -1,6 +1,5 @@
 # Review and System Design
 
-
 ## Review algorithm
 
 Me, personnaly divide review to three parts:
@@ -34,8 +33,7 @@ Me, personnaly divide review to three parts:
 3. **Refactoring**
 	*Can code be cleaner, with the same functionality?*
 
-
-
+   
 ## System Design questions
 
 - You drive the process!
@@ -62,5 +60,6 @@ Me, personnaly divide review to three parts:
 ### links
 - https://www.youtube.com/watch?v=Be7INI_U6GY
 - https://github.com/donnemartin/system-design-primer
-- Youtube channel "system design interview"
+- [Youtube channel "system design interview"](https://www.youtube.com/@SystemDesignInterview)
+- [Youtube channel "IGotAnOffer-Engineering"](https://www.youtube.com/@IGotAnOffer-Engineering)
 

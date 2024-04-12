@@ -55,10 +55,10 @@
 - **Tell me please about projects that currently runs, or that you plan to launch in that year?**
 - **What will be my first task?**
 - **Let's imagine that you hire someone, then one year passes. What that person should did, that you will understand, that it was a right choice of person?**
+- **What person on that position should do for next 3-6-12 monthes?**
 - How many engineers in team right now?
 - Are you going to hire more?
-- What typical day on this position looks like?
-- What you expect from person on this position in 3, 6 month?
+- **What typical day on this position looks like?**
 - What task will be in priority each month?
 - Who responsble for infrastructure?
 - Do you have data mesh, or different approach? Or plan ti build?
