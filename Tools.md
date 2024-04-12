@@ -506,6 +506,7 @@ spark.udf.register('PythonSquareUDF', square)
 1. https://youtube.com/playlist?list=PLHJp-gMPHvp9MDqV4qybL1FSBWcwMopcf&si=LVMlrr45tgwxIBja
 2. https://towardsdatascience.com/optimizing-output-file-size-in-apache-spark-5ce28784934c
 3. https://medium.com/datadenys/how-to-improve-clickhouse-table-compression-697ef8f4ccb3
+4. [Spark optimization from databricks](https://www.youtube.com/watch?v=daXEp4HmS-E)<br>
 
 
 ## Kafka
