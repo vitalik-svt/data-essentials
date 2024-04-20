@@ -57,14 +57,6 @@ It also can be understood as json, but serialised in binary (which is oversimpli
 
 [nice video about avro internals](https://www.youtube.com/watch?v=0HsMaiLbXFk)
 
-### Thrift
-
-pass
-
-### ProtoBuf
-
-pass
-
 ## Columnar formats
 
 ### ORC (Optimized Row Columnar) ([docs](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+ORC))
@@ -431,3 +423,30 @@ it's just increase the number of that transaction, and write it (00003.json)
 [Spark optimization from databricks](https://www.youtube.com/watch?v=daXEp4HmS-E)<br>
 [Delta lake (on russian)](https://www.youtube.com/watch?si=ReX58B4duoLPpqaD&v=znVE6fpQqAU&feature=youtu.be)<br>
 [Hudi vs Delta vs Iceberg comparison](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)<br>
+
+## Enconding
+
+We talked about formats there, but most of them impossible without enconding.
+We can determine two main types of encoding:
+- **loseless** - compression without losing any data
+- **lossy** - we don't consider it in dat world, because don't want to lose anything
+
+Most frequently used type of loselss encoding is **Run-length Encoding (RLE)**
+par example, your data is:
+*aaabbcdddddeefggg*
+
+then you can encode it as symbol+number of reprtitions
+*a3b2c1d4e2f1g2*
+
+which can save you a space
+
+Obviously, RLE most effective in sorted data!
+So, if you choose thr encoding type of your Parquet file, make sure, that it's sorted somehow, so you will actually get that bonuses of encoding. Because there can be such situation, where RLE-encoded file will take similar space or even more(!), than without encoding 
+
+## Data exchange protocols
+
+It's protocols of exchanging binary data between machines
+
+- **Thrift**
+- **ProtoBuf (Protocol buffers)**
+

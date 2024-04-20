@@ -1,4 +1,4 @@
-# Databases_tasks
+# SQL tasks
 
 ## SQL basic questions
 

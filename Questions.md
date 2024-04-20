@@ -1,4 +1,4 @@
-# General_questions
+# General questions
 
 ## Common questions from employer
 
