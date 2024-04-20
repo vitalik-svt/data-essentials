@@ -1,4 +1,4 @@
-# Refactoring algorithm
+# Refactoring
 
 ## Refactoring tips
 
