@@ -971,16 +971,14 @@ decorated_function = simple_decorator(our_func_to_decorate)
 If we want to pass arguments to our function through decorator
 
 ```python
-def one_more_layer(a=1)
+def one_more_layer(a=2):
     def simple_decorator(func):
-
-        def wrapper(func, *args, **kwargs):
+        def wrapper(*args, **kwargs):
             print('do some before func')
             func(*args, **kwargs)
             print('do some after func')
-
         return wrapper
-    def simple_decorator
+    return simple_decorator
 
 # and we can modify our function two ways:
 
