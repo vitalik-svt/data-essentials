@@ -947,7 +947,7 @@ Object, that incapsulate logic of anything
 
 def simple_decorator(func):
 
-    def wrapper(func):
+    def wrapper():
         print('do some before func')
         func()
         print('do some after func')
