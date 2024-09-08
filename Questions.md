@@ -71,5 +71,9 @@
 - How you see development of your main product for next year?
 - Closing question: So do you have some concerns/doubts about my candidature?
 
+### Usefil links
 
+I've found that, pretty nice website, which contains similar questions. 
+You can use it too
+https://askabout.company
 
