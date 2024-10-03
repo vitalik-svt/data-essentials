@@ -142,12 +142,15 @@ print(a[True])
 
 Answer:
 
-print will return 'd'. Because python will consider True, 1 and 1.0 as the same key (because they have similar hashes). So while dict will be constructed, at first, interpreter will add True:'a' pair, than 1:'b' pair will be replace first pair, as it would be update. But what's important here: python only replace value ('a' -> 'b'), but key will be the same, because why do you need to rewrite it, because Python thinks, that it's the same key, so in the end we will have that dict:
+print will return 'd'. Because python will consider True, 1 and 1.0 as the same key (because they have similar hashes).<br>
+So while dict will be constructed, at first, interpreter will add True:'a' pair, than 1:'b' pair will be replace first pair, as it would be update. <br>
+But what's also important here: <br>
+python only replace value ('a' -> 'b'), but key will be the same, because why do you need to rewrite it, because Python thinks that it's the same key, so in the end we will have that dict:
 
 ```python
 a = {
   True : 'd', 
-  1 : 'b', 
+  '1' : 'c', 
 }
 ```
 
