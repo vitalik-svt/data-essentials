@@ -147,6 +147,12 @@ AABBBB
 right:
 AABBBBE
 
+## Can be such situation, where Left join will return more rows, than cross join?
+
+Answer:
+
+No, Maximum - same amount of rows
+
 ## Find suppliers, that supply us biggest amount of money in last month
 
 |id |      dt    | id_supplier | id_product | quantity | price|

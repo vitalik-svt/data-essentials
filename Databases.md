@@ -353,6 +353,10 @@ Two main scalability options:
 - Partitions:
 	Partition by monthes (for example)
 
+## PostgreSQL Don'ts
+
+[Nice link to explore](https://wiki.postgresql.org/wiki/Don%27t_Do_This)
+
 ## Files
 
 ### Unstructured
