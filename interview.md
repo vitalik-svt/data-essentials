@@ -68,12 +68,6 @@
 - How you see development of your main product for next year?
 - Closing question: So do you have some concerns/doubts about my candidature?
 
-### Usefil links
-
-I've found that, pretty nice website, which contains similar questions. 
-You can use it too
-https://askabout.company
-
 # System Design part
 
 - You drive the process!
@@ -96,3 +90,11 @@ https://askabout.company
     - What is target? BI?
 
 - You should continiously ask, if your client understand your way of thinkning!
+
+
+### links
+- https://askabout.company
+- https://www.youtube.com/watch?v=Be7INI_U6GY
+- https://github.com/donnemartin/system-design-primer
+- [Youtube channel "system design interview"](https://www.youtube.com/@SystemDesignInterview)
+- [Youtube channel "IGotAnOffer-Engineering"](https://www.youtube.com/@IGotAnOffer-Engineering)
