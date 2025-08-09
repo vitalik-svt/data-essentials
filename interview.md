@@ -29,7 +29,6 @@
 - How you provide training or other development of employees?
 - Does Company profitable?
 
-
 ### Questions to Tech team
 
 - **How many engineers in a team?**
@@ -49,7 +48,6 @@
 - Is it Analytical or Product side?
 - How many python/sql in percents will be on this position?
 
-
 ### Questions to Manager
 
 - **Tell me please about projects that currently runs, or that you plan to launch in that year?**
@@ -62,7 +60,6 @@
 - What task will be in priority each month?
 - Who responsble for infrastructure?
 - Do you have data mesh, or different approach? Or plan ti build?
-
 
 ### Questions for C-level
 
@@ -77,3 +74,25 @@ I've found that, pretty nice website, which contains similar questions.
 You can use it too
 https://askabout.company
 
+# System Design part
+
+- You drive the process!
+- You should clarify all requirements in the start!
+
+    dev part:
+    - How many users/data in the system?
+    - is that system for company, or regional, global?
+    - is data availiability crucial?
+    - what about data latency?
+    - OLTP/OLAP share
+    - what features should be implemented?
+    
+    data part:
+    - what is source of data?
+    - Is it need to be batch or streaming? with which frequency, if batch?
+    - size of data?
+    - is it migration, or new system? 
+    - who will use that system? BA, DS, OPS? 
+    - What is target? BI?
+
+- You should continiously ask, if your client understand your way of thinkning!
