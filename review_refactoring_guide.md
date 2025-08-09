@@ -31,30 +31,6 @@ Me, personnaly divide review to three parts:
 3. **Refactoring**
 	*Can code be cleaner, with the same functionality?*
 
-   
-# System Design questions
-
-- You drive the process!
-- You should clarify all requirements in the start!
-
-    dev part:
-    - How many users/data in the system?
-    - is that system for company, or regional, global?
-    - is data availiability crucial?
-    - what about data latency?
-    - OLTP/OLAP share
-    - what features should be implemented?
-    
-    data part:
-    - what is source of data?
-    - Is it need to be batch or streaming? with which frequency, if batch?
-    - size of data?
-    - is it migration, or new system? 
-    - who will use that system? BA, DS, OPS? 
-    - What is target? BI?
-
-- You should continiously ask, if your client understand your way of thinkning!
-
 # Refactoring tips
 
 - **Use type hints everywhere!**
