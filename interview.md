@@ -1,3 +1,10 @@
+- [General questions](#general-questions)
+  - [Common questions from employer](#common-questions-from-employer)
+  - [Common questions to employer](#common-questions-to-employer)
+- [System Design part](#system-design-part)
+- [Links](#links)
+
+
 # General questions
 
 ## Common questions from employer

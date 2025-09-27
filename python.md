@@ -1,3 +1,29 @@
+- [Python](#python)
+  - [Built-in Sequences, Objects, Functions](#built-in-sequences-objects-functions)
+  - [Functions](#functions)
+  - [Iterable, Iterators, Generators](#iterable-iterators-generators)
+  - [Classes, Objects](#classes-objects)
+  - [Modules, Packages](#modules-packages)
+  - [Exceptions](#exceptions)
+  - [Decorators](#decorators)
+  - [Descriptor (doc)](#descriptor-doc)
+  - [Processes, Threads, AsyncIO  (nice video about async)](#processes-threads-asyncio--nice-video-about-async)
+  - [Input/Output](#inputoutput)
+  - [Python testing](#python-testing)
+  - [Linux commands](#linux-commands)
+- [Refactoring tips](#refactoring-tips)
+- [Python tasks](#python-tasks)
+  - [function get some iterable, where all numbers included twice, except one, which included only once.](#function-get-some-iterable-where-all-numbers-included-twice-except-one-which-included-only-once)
+  - [We have two sorted list. We need to merge them and get sorted result](#we-have-two-sorted-list-we-need-to-merge-them-and-get-sorted-result)
+  - [We have list with stock price over time (time series, let's say). We need to choose day to buy and to sell stock with maximum profit. If it's impossible - return 0](#we-have-list-with-stock-price-over-time-time-series-lets-say-we-need-to-choose-day-to-buy-and-to-sell-stock-with-maximum-profit-if-its-impossible---return-0)
+  - [What that code will return?](#what-that-code-will-return)
+  - [What print will return?](#what-print-will-return)
+  - [How that works?](#how-that-works)
+  - [What that code will return?](#what-that-code-will-return-1)
+  - [How to create class without class word](#how-to-create-class-without-class-word)
+- [Links and literature](#links-and-literature)
+
+
 # Python
 
 That document based on https://github.com/yakimka/python_interview_questions
