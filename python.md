@@ -1432,6 +1432,7 @@ def get_content(entry):
 
 # Patterns
 
+- [SOLID video](https://www.youtube.com/watch?v=uxwjXLjJOoM)
 - [Refactoring](https://refactoring.guru/refactoring/catalog)
 - [Design patterns](https://refactoring.guru/design-patterns/catalog)
 
