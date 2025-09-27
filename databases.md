@@ -603,7 +603,7 @@ Without a standard columnar data format, every database and language has to impl
 
 Arrow's in-memory columnar data format is an out-of-the-box solution to these problems. Systems that use or support Arrow can transfer data between them at little-to-no cost. Moreover, they don't need to implement custom connectors for every other system. On top of these savings, a standardized memory format facilitates reuse of libraries of algorithms, even across languages.
 
-![before](./_image/databases/tf_arrow_1_1.png)
+![before](./_images/databases/tf_arrow_1_1.png)
 ![after](./_images/databases/tf_arrow_1_2.png)
 
 [Video about arrow from creator](https://www.youtube.com/watch?v=R4BIXbfKBtk&t=548s)
