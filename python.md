@@ -10,18 +10,13 @@
   - [Processes, Threads, AsyncIO  (nice video about async)](#processes-threads-asyncio--nice-video-about-async)
   - [Input/Output](#inputoutput)
   - [Python testing](#python-testing)
-  - [Linux commands](#linux-commands)
-- [Refactoring tips](#refactoring-tips)
+  - [Virtual Environment](#virtual-environment)
+- [Refactoring](#refactoring)
+- [Patterns](#patterns)
 - [Python tasks](#python-tasks)
-  - [function get some iterable, where all numbers included twice, except one, which included only once.](#function-get-some-iterable-where-all-numbers-included-twice-except-one-which-included-only-once)
-  - [We have two sorted list. We need to merge them and get sorted result](#we-have-two-sorted-list-we-need-to-merge-them-and-get-sorted-result)
-  - [We have list with stock price over time (time series, let's say). We need to choose day to buy and to sell stock with maximum profit. If it's impossible - return 0](#we-have-list-with-stock-price-over-time-time-series-lets-say-we-need-to-choose-day-to-buy-and-to-sell-stock-with-maximum-profit-if-its-impossible---return-0)
-  - [What that code will return?](#what-that-code-will-return)
-  - [What print will return?](#what-print-will-return)
-  - [How that works?](#how-that-works)
-  - [What that code will return?](#what-that-code-will-return-1)
-  - [How to create class without class word](#how-to-create-class-without-class-word)
-- [Links and literature](#links-and-literature)
+  - [Questions](#questions)
+  - [Coding tasks](#coding-tasks)
+- [Additional Info](#additional-info)
 
 
 # Python
@@ -1160,28 +1155,7 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-## Linux commands
-
-### File system
-
-- **/bin** - user binary files
-- **/sbin** - System binaries
-- **/etc** - Config files 
-- **/dev** - Device files
-- **/proc** - Process files
-- **/var** - Variable files 
-- **/tmp** - Temporary files
-- **/usr** - User program 
-- **/home** - Home directory
-- **/boot** - Boot files 
-- **/lib** - System libraries
-- **/opt** - Optional app
-- **/mnt** - Mount directory
-- **/media** - Media
-- **/srv** - Service data
-
-
-### Virtual Environment
+## Virtual Environment
 
 - `vitrualenv` - for Python2
 - `venv` - from Python3
@@ -1192,7 +1166,6 @@ python3 -m venv venv # second venv it's folder to install venv
 source env/bin/activate # activate for mac
 deactivate # deactivate
 ```
-
 
 ### Most used linux commands
 
@@ -1215,7 +1188,7 @@ deactivate # deactivate
 - **ping** - test network. `ping www.google.com`
 - **du** - shows disk usage. `du -ha --max-depth=1` shows usage in dirname for all files only 1st level of nestedness
 
-# Refactoring tips
+# Refactoring
 
 - **Use type hints everywhere!**
 
@@ -1457,9 +1430,22 @@ def get_content(entry):
     yield from entry.get_blocks()
 ```
 
+# Patterns
+
+- [Refactoring](https://refactoring.guru/refactoring/catalog)
+- [Design patterns](https://refactoring.guru/design-patterns/catalog)
+
 # Python tasks
 
-## function get some iterable, where all numbers included twice, except one, which included only once.
+## Questions
+
+### How to create class without class word
+
+Answer: type
+
+## Coding tasks
+
+### function get some iterable, where all numbers included twice, except one, which included only once.
 for example: `[1, 1, 2, 3, 4, 3, 2]`.
 You need to find that only one number
 
@@ -1479,7 +1465,7 @@ Counter(z)
 ```
 
 
-## We have two sorted list. We need to merge them and get sorted result
+### We have two sorted list. We need to merge them and get sorted result
 
 ```python
 left_ids = [10, 20, 30, 40]
@@ -1520,7 +1506,7 @@ while i <= len(left_ids) and j <= len(right_ids):
 ```
 
 
-## We have list with stock price over time (time series, let's say). We need to choose day to buy and to sell stock with maximum profit. If it's impossible - return 0
+### We have list with stock price over time (time series, let's say). We need to choose day to buy and to sell stock with maximum profit. If it's impossible - return 0
 
 ```python
 stocks = [7,1,5,1,3,6,4]
@@ -1577,7 +1563,7 @@ best_profit = Solution.best_margin(stocks)
 print(best_profit)
 ```
 
-## What that code will return?
+### What that code will return?
 
 ```sql
 len(' '.join(list(map(str, [0, 1]))))
@@ -1586,7 +1572,7 @@ len(' '.join(list(map(str, [0, 1]))))
 Answer: 3 (because it's len of `0 1` string)
 
 
-## What print will return?
+### What print will return?
 
 ```sql
 a = {
@@ -1616,7 +1602,7 @@ a = {
 n.b., that in python 3.7+ order of keys guaranteed
 
 
-## How that works?
+### How that works?
 
 ```python
 a, b = b, a
@@ -1638,7 +1624,7 @@ print(type(a))
 
 Similar mechanism here
 
-## What that code will return?
+### What that code will return?
 
 ```python
 a = 'Hello'
@@ -1667,14 +1653,12 @@ msg = list([a])
 print(*msg)  # Here we unpack iterable
 ```
 
-## How to create class without class word
 
-Answer: type
+# Additional Info
 
-
-# Links and literature
-
-- https://docs.python.org/3/library/index.html
+- [Official Python doc](https://docs.python.org/3/library/index.html)
+- Fluent Python. Clear, Concise, and Effective Programming (Luciano Ramalho)
+- Designing Data-Intensive Applications (Martin Kleppmann)
 - Python for Data Analysis (Wes McKinney) 2nd edition
 
 

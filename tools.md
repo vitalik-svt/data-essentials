@@ -1,3 +1,5 @@
+- [Linux](#linux)
+	- [File system](#file-system)
 - [Tools](#tools)
 	- [Airflow](#airflow)
 	- [Hadoop](#hadoop)
@@ -5,7 +7,28 @@
 	- [Kafka](#kafka)
 	- [DBT](#dbt)
 	- [Terraform](#terraform)
+- [Libraries](#libraries)
+- [Additional Info](#additional-info)
 
+# Linux
+
+## File system
+
+- **/bin** - user binary files
+- **/sbin** - System binaries
+- **/etc** - Config files 
+- **/dev** - Device files
+- **/proc** - Process files
+- **/var** - Variable files 
+- **/tmp** - Temporary files
+- **/usr** - User program 
+- **/home** - Home directory
+- **/boot** - Boot files 
+- **/lib** - System libraries
+- **/opt** - Optional app
+- **/mnt** - Mount directory
+- **/media** - Media
+- **/srv** - Service data
 
 
 # Tools
@@ -594,5 +617,15 @@ Backend of the terraform can be stored:
 - remote: in terraform cloud (free up to 5 users)
 - remote: selfhosted (in S3 + DynamoDB (in cloud, for instance))
 
+# Libraries
 
+Useful libraries, that you should get along with, preferrably:
 
+- pydantic
+- poetry
+- sqlalchemy
+- fastapi
+
+# Additional Info
+
+- [CNCF Technology Landscape Radar](https://www.cncf.io/reports/cncf-technology-landscape-radar/)

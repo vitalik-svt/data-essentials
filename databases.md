@@ -31,24 +31,9 @@
   - [Anchor Model](#anchor-model)
 - [SQL Review algorithm](#sql-review-algorithm)
 - [SQL tasks](#sql-tasks)
-  - [SQL basic questions](#sql-basic-questions)
-  - [Which query returns biggest number:](#which-query-returns-biggest-number)
-  - [How many rows will get same query but without distinct:](#how-many-rows-will-get-same-query-but-without-distinct)
-  - [What you need to add, to get share of revenue from the same user, but in previous day?](#what-you-need-to-add-to-get-share-of-revenue-from-the-same-user-but-in-previous-day)
-  - [Write parametrised query which return price by day and id](#write-parametrised-query-which-return-price-by-day-and-id)
-  - [we have tables ABBC и AABBE. What we got for INNER JOIN and RIGHT JOIN?](#we-have-tables-abbc-и-aabbe-what-we-got-for-inner-join-and-right-join)
-  - [Can be such situation, where Left join will return more rows, than cross join?](#can-be-such-situation-where-left-join-will-return-more-rows-than-cross-join)
-  - [Find suppliers, that supply us biggest amount of money in last month](#find-suppliers-that-supply-us-biggest-amount-of-money-in-last-month)
-  - [How to find suppliers, that didn't supply us anything, if we have suppliers dict nearby](#how-to-find-suppliers-that-didnt-supply-us-anything-if-we-have-suppliers-dict-nearby)
-  - [Question: We have two tables with item sstellites: address and price. We need to get last actual address and price for each item](#question-we-have-two-tables-with-item-sstellites-address-and-price-we-need-to-get-last-actual-address-and-price-for-each-item)
-  - [Question: We have table with students marks. Get the students with less than 10 "2" marks , and more than 2 "5" marks](#question-we-have-table-with-students-marks-get-the-students-with-less-than-10-2-marks--and-more-than-2-5-marks)
-  - [What is min and max value can be for different type of joins? Values in tables are unique!](#what-is-min-and-max-value-can-be-for-different-type-of-joins-values-in-tables-are-unique)
-  - [There is a table with ~10 billion rows, which contains 10 last years of data, and which is really used by users. Data splitted by years evenly. You decided to left only two last years, because it's most used data. How you will perform that action, and how you do that in future?](#there-is-a-table-with-10-billion-rows-which-contains-10-last-years-of-data-and-which-is-really-used-by-users-data-splitted-by-years-evenly-you-decided-to-left-only-two-last-years-because-its-most-used-data-how-you-will-perform-that-action-and-how-you-do-that-in-future)
-  - [There is a huge table with 100+ columns. There is no primary key, but we have set of 30 columns, that combined can be used as key. How you can check if there is duplicates in table? Note, that group by by 30 columns will lasts forever, or even doesn't work](#there-is-a-huge-table-with-100-columns-there-is-no-primary-key-but-we-have-set-of-30-columns-that-combined-can-be-used-as-key-how-you-can-check-if-there-is-duplicates-in-table-note-that-group-by-by-30-columns-will-lasts-forever-or-even-doesnt-work)
-  - [Will that query run?](#will-that-query-run)
-  - [Will that query run?](#will-that-query-run-1)
-  - [Will that query run?](#will-that-query-run-2)
-  - [Links and literature](#links-and-literature)
+  - [Questions](#questions)
+  - [Coding tasks](#coding-tasks)
+- [Additional Info](#additional-info)
 
 
 
@@ -1025,7 +1010,7 @@ Me, personnaly divide review to three parts:
 
 # SQL tasks
 
-## SQL basic questions
+## Questions
 
 - Difference between Truncate and Delete: Delete delete row by row and log that. Truncate just drop whole table and recreates it
 - What languages SQL has?: DDL (definition: create, alter), DML (manipulation: select), DCL (control: grant)
@@ -1062,7 +1047,9 @@ Me, personnaly divide review to three parts:
     - More Compact Database
     - Ensure Consistent data after modification
 
-## Which query returns biggest number:
+## Coding tasks
+
+### Which query returns biggest number:
 
 ```sql
 -- a
@@ -1096,7 +1083,7 @@ and second.filter_column >= 5
 
 Answer: b, because where condition filter result, but join - not (for left join)
 
-## How many rows will get same query but without distinct:
+### How many rows will get same query but without distinct:
 ```sql
 select distinct a, b, c
           , sum(d) as revenue 
@@ -1105,7 +1092,7 @@ group by a, b, c
 ```
 Answer: Same amount
 
-## What you need to add, to get share of revenue from the same user, but in previous day?
+### What you need to add, to get share of revenue from the same user, but in previous day?
 ```sql
 select event_date, 
 	   user_id, 
@@ -1116,7 +1103,7 @@ order by event_date
 ```
 Answer: revenue / lag(revenue) Over(Partition by user_id order by event_date desc)
 
-## Write parametrised query which return price by day and id
+### Write parametrised query which return price by day and id
 
 | id | price | dt|
 |----|-------|---|
@@ -1162,7 +1149,7 @@ ORDER BY dt DESC
 LIMIT 1
 ```
 
-## we have tables ABBC и AABBE. What we got for INNER JOIN and RIGHT JOIN?
+### we have tables ABBC и AABBE. What we got for INNER JOIN and RIGHT JOIN?
 
 Answer:
 
@@ -1172,13 +1159,13 @@ AABBBB
 right:
 AABBBBE
 
-## Can be such situation, where Left join will return more rows, than cross join?
+### Can be such situation, where Left join will return more rows, than cross join?
 
 Answer:
 
 No, Maximum - same amount of rows
 
-## Find suppliers, that supply us biggest amount of money in last month
+### Find suppliers, that supply us biggest amount of money in last month
 
 |id |      dt    | id_supplier | id_product | quantity | price|
 |---|------------|-------------|------------|----------|------|
@@ -1202,7 +1189,7 @@ from
 where batch_cost = (select max(batch_cost) from ...)
 ```
 
-## How to find suppliers, that didn't supply us anything, if we have suppliers dict nearby
+### How to find suppliers, that didn't supply us anything, if we have suppliers dict nearby
 DDL:
 ```sql
 CREATE TABLE IF NOT EXISTS supplier (
@@ -1234,7 +1221,7 @@ WHERE
     supplier.id IS NULL
 ```
 
-## Question: We have two tables with item sstellites: address and price. We need to get last actual address and price for each item
+### Question: We have two tables with item sstellites: address and price. We need to get last actual address and price for each item
 
 ```sql
 create table s_item_address (
@@ -1276,7 +1263,7 @@ full outer join
     and sia.item_id = sip.item_id
 ```
 
-## Question: We have table with students marks. Get the students with less than 10 "2" marks , and more than 2 "5" marks
+### Question: We have table with students marks. Get the students with less than 10 "2" marks , and more than 2 "5" marks
 
 ```sql
 create table marks (
@@ -1301,7 +1288,7 @@ where 1=1
 ```
 
 
-## What is min and max value can be for different type of joins? Values in tables are unique!
+### What is min and max value can be for different type of joins? Values in tables are unique!
 ```sql
 a - 5 rows
 b - 10 rows
@@ -1318,18 +1305,18 @@ Answer:
 4. FULL JOIN - min 10 (largest(a,b)) max 15(a + b).
 5. CROSS JOIN - min 50 max 50.
 
-## There is a table with ~10 billion rows, which contains 10 last years of data, and which is really used by users. Data splitted by years evenly. You decided to left only two last years, because it's most used data. How you will perform that action, and how you do that in future?  
+### There is a table with ~10 billion rows, which contains 10 last years of data, and which is really used by users. Data splitted by years evenly. You decided to left only two last years, because it's most used data. How you will perform that action, and how you do that in future?  
 
 Answer:
 You can insert last two years in separate table and send all queries to that table. It will be zero downtime, but it costs additional space.
 In future it will be more convinient to partitionize table by years, and drop/detach and store somwhere outdated partitions  
 
-## There is a huge table with 100+ columns. There is no primary key, but we have set of 30 columns, that combined can be used as key. How you can check if there is duplicates in table? Note, that group by by 30 columns will lasts forever, or even doesn't work
+### There is a huge table with 100+ columns. There is no primary key, but we have set of 30 columns, that combined can be used as key. How you can check if there is duplicates in table? Note, that group by by 30 columns will lasts forever, or even doesn't work
 
 Answer:
 You can concatenate that 30 columns and mashe hash of that concatenation. And group by that hashed field
 
-## Will that query run? 
+### Will that query run? 
 
 ```sql
 sеlеct * 
@@ -1343,7 +1330,7 @@ Answer: No
 
 Answer: If we have only id column in that table
 
-## Will that query run? 
+### Will that query run? 
 
 ```sql
 uрdаtе table1 
@@ -1353,7 +1340,7 @@ sеt fiеld1 = rоw_numbеr() frоm table1
 Answer: No, because row_number() can be accessible only in select, not in set. Also, it didn't finished syntactically
 
 
-## Will that query run? 
+### Will that query run? 
 
 ```sql
 sеlеct * frоm table1
@@ -1366,10 +1353,9 @@ whеrе null = null
 Answer: yes, because of last condition. Other conditions will return either False, or None, because None can be compared only with None, by using is/is not 
 
 
-## Links and literature
-
-### Not sources of that page, but good sources in general
+# Additional Info
 
 - Designing Data-Intensive Applications (Martin Kleppmann)
+- PostgreSQL 16 internals
 - https://seanhu93.medium.com/difference-of-isolation-and-consistency-cc9ddbfb88e0#:~:text=So%20what%20is%20the%20difference,clients%20of%20a%20distributed%20system
 - https://www.youtube.com/watch?v=1j8SdS7s_NY

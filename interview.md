@@ -2,7 +2,7 @@
   - [Common questions from employer](#common-questions-from-employer)
   - [Common questions to employer](#common-questions-to-employer)
 - [System Design part](#system-design-part)
-- [Links](#links)
+- [Additional Info](#additional-info)
 
 
 # General questions
@@ -99,7 +99,7 @@
 - You should continiously ask, if your client understand your way of thinkning!
 
 
-# Links
+# Additional Info
 - https://askabout.company
 - https://www.youtube.com/watch?v=Be7INI_U6GY
 - https://github.com/donnemartin/system-design-primer
