@@ -46,7 +46,7 @@ We can combine different operations into one transaction, when we need to be sur
 
 For example, when we transfer money from one account to another, we need to make it one logical transaction:
 
-```
+```sql
 BEGIN TRANSACTION;
 
 UPDATE bank_accounts
@@ -67,12 +67,11 @@ Transaction have these main commands:
 
 ## ACID (Properties of transaction)
 
+- **Atomicity** - means that operation (transaction) can be fully done or rollback'ed, yes or no, 1 or 0
 
-**Atomicity** - means that operation (transaction) can be fully done or rollback'ed, yes or no, 1 or 0
+- **Consistency** - it's logical property. In previous example with bank transfer consistency means, that total amount of money will be the same after transaction. It's like law of conservation of energy
 
-**Consistency** - it's logical property. In previous example with bank transfer consistency means, that total amount of money will be the same after transaction. It's like law of conservation of energy
-
-**Isolation** - it means, that each transaction independent of other transactions (see Isolation levels).
+- **Isolation** - it means, that each transaction independent of other transactions (see Isolation levels).
 Isolation can be implemented in different ways, it's up to rdbms developers. Here some examples of **Isolation Levels**, from weakest, to strongest (approximately)
 
 	- **Read Commited**: have two main parts:
@@ -87,17 +86,17 @@ Isolation can be implemented in different ways, it's up to rdbms developers. Her
 
 	- **Snapshot Isolation Level/Уepeatable read**: each transaction reads their own version of data, that commited when that transaction started
 
-		It can be implemented by:
-		- storing few versions of each data, which called MVCC (multiversion concurrency control)
-		- each transaction must have monotoniously increased id (txid)
-		- each piece of data should hold store metadata with information about created transaction, deleted, modified, so based on that information each transaction can understand: can it "see" that data, or not
+		- It can be implemented by:
+          - storing few versions of each data, which called MVCC (multiversion concurrency control)
+          - each transaction must have monotoniously increased id (txid)
+          - each piece of data should hold store metadata with information about created transaction, deleted, modified, so based on that information each transaction can understand: can it "see" that data, or not
 
 	- **Serializability**: Most strict isolation level. Guarantees that result of concurrenttly executed transactions will be the same as if they are executed serially (one by one). But implement that hardest level of isolation can down speed.
 
-	Serializibility implemented mainly in one of that ways:
-		- sequential execution it's real isolation: when you have not so much transactions, and all of them fast you can just evaluate transactions really one by one
-		- 2PL (2 phased lock): Transaction block some rows (by some predicat or something), and let it go after commit. It's quite slow, because in insert/update operations it's practicallly a sequential execution 
-		- SSI (Serializable Snapshot Isolation): It use optimistic approach (while 2PL use pessimistic one). This approach based on Shapshot Isolation, but we also continously check transaction id (monotonically increasing value), and right before commiting transaction, transaction manager check, if there is transaction with bigger id commits some changes. If yes, our transaction should be rollbacked and rerunned
+      - Serializibility implemented mainly in one of that ways:
+          - sequential execution it's real isolation: when you have not so much transactions, and all of them fast you can just evaluate transactions really one by one
+          - 2PL (2 phased lock): Transaction block some rows (by some predicat or something), and let it go after commit. It's quite slow, because in insert/update operations it's practicallly a sequential execution 
+          - SSI (Serializable Snapshot Isolation): It use optimistic approach (while 2PL use pessimistic one). This approach based on Shapshot Isolation, but we also continously check transaction id (monotonically increasing value), and right before commiting transaction, transaction manager check, if there is transaction with bigger id commits some changes. If yes, our transaction should be rollbacked and rerunned
 
 **Durability** - means, that if we get proof of end of transaction, that means, that there is can't happen something, to rollback that transaction, and it stored in database forever
 
@@ -159,20 +158,25 @@ No-SQL examples:
 
 ## How JOIN works
 
-- **Nested Loop:**
-For each row of the left table, iterate over whole right table
-it's O(NxM)
+- **Nested Loop:**<br>
+For each row of the left table, iterate over whole right table.<br>
+it's O(NxM)<br><br>
 
-- **Merge Join:**
+- **Merge Join:**<br>
 At first we need to sort both tables, and after that
 for first row of left table find all rows in right table and stops (remember place, where stop)
-For second row of left table loop started from that place, where stopped.
-So it's O(N+M)
+For second row of left table loop started from that place, where stopped.<br>
+It's O(N+M)<br><br>
 
-- **Hash Join:**
+- **Hash Join:**<br>
 At first we need to create hashmap from smallest table.
-Then for each row from biggest table we calculate hash() and go to the hasmap.
-so it's O(N)
+Then for each row from biggest table we calculate hash() and go to the hasmap.<br>
+It's O(N)<br><br>
+
+- **Broadcast Join:**<br>
+Usually used in distributed systems (Spark).
+That strategy used, when right (any, ok) table are so small, that can be fully distributed to all nodes, where left table lays, and join there.<br>
+It's O(N)<br><br>
 
 ## Indexes
 
@@ -191,13 +195,13 @@ PostgreSQL doesn't have that concepts: all data stored in heaps, so all indexes 
 
 It's more simpler to consider indexes as separate from data structure things, so clustered index - it's not really common thing
 
-### Pro et contra
+### Pluses et Minuses of indexes
 
-Pro: 
+**Pluses:** 
 1. Faster select operations 
 2. Phisycal sorting of data (but for clustered types of indexes only). If it will be unclustered index (most of it, tbh), it will be just additional data structure, that contains links to real data   
 
-Contra: 
+**Minuses:** 
 1. Slowyng DML operations (UPDATE, INSERT, DELETE) because you need to rebuild index each time
 2. Increasing of size of database (for non-clustered indexes)
 3. It takes time to rebuild indexes  
@@ -205,11 +209,11 @@ Contra:
 
 ### Basic Data base index types
 
-**B-Tree (Balanced)** - Most used type at that time. 
+- **B-Tree (Balanced)** - Most used type at that time. 
 
-pass
+Just like tree, basically
 
-**Hash Index** - Mostly used for key:value storage
+- **Hash Index** - Mostly used for key:value storage
 
 It's a hasmap, that stored somewhere in ram (for fast response).
 Let's assume, that our DB it's simple file that store some key:value, and we only append new values to the end of the file
@@ -225,11 +229,11 @@ etc
 
 So when we need to find some value, we just scan our hasmap and go directly to needed offset
 
-**SS-Table**
+- **SS-Table**
 
 pass
 
-**LSM-Tree**
+- **LSM-Tree**
 
 pass
 
@@ -247,14 +251,19 @@ B-Tree (default), Hash, Generalized Inverted Index (GIN), Generalized Search Tre
 
 ### When it's better not to have indexes, instead of having them?
 
-In a nutshell, that's how process looks like:
-We go to the index, iterate over them, and go to particular data cells, with links, that mentioned in index.
+In a nutshell, that's how process looks like:<br>
+We go to the index, iterate over them, and go to particular data cells, with links, that mentioned in index.<br>
 
-In that case, if, for example, we have table with our employees, and if we quite old company, that means, that flag `active_employee` will be on 90% filled with `False`. So if we want to select some of old employee, and if we have that field indexed, so we need to get to index and select 90% of rows with links in index. That whole "go to index -> find value -> go to link - > find real value" will be more time consuming, than simple fullscan in actual data
+In that case, if, for example, we have table with our employees, and if we quite old company,<br>
+that means, that flag `active_employee` will be on 90% filled with `False`. <br>
+So if we want to select some of old employee, and if we have that field indexed, <br>
+so we need to get to index and select 90% of rows with links in index. <br>
+That whole "go to index -> find value -> go to link - > find real value" will be more time consuming, <br>
+than simple fullscan in actual data
 
 ### Why you can't just create as many indexes as possible, if then so great?
 
-Because each index should be rebuild after any changes in table, which slow writes in database
+Because each index should be rebuilt after any changes in table, which slow writes in database
 
 ## What is Database lock? 
 
@@ -276,7 +285,7 @@ Types:
 
 ### Rowstore
 
-Data stored by rows, so DBMS iterate over rows and handle all the data.
+Data stored by rows, so DBMS iterate over rows and handle all the data.<br>
 Mostly used for operations, that involves whole raw
 
 - **Pro**: 
@@ -366,9 +375,9 @@ Store data about fields/columns of table
 
 ## How data stored (PostgreSQL)
 
-Table consist of segments
+Table consist of segments.
 
-Segment consist of pages
+Segment consist of pages.
 
 In each page stored actual data.
 Write in each page performs in two directions:
@@ -1355,7 +1364,7 @@ Answer: yes, because of last condition. Other conditions will return either Fals
 
 # Additional Info
 
-- Designing Data-Intensive Applications (Martin Kleppmann)
-- PostgreSQL 16 internals
+- `Designing Data-Intensive Applications` (Martin Kleppmann)
+- `PostgreSQL 16 internals`
 - https://seanhu93.medium.com/difference-of-isolation-and-consistency-cc9ddbfb88e0#:~:text=So%20what%20is%20the%20difference,clients%20of%20a%20distributed%20system
 - https://www.youtube.com/watch?v=1j8SdS7s_NY
