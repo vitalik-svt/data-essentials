@@ -52,7 +52,7 @@
 - Do you use containerization services?
 - Do Company have meetups?
 - Are you opened for new technologies in projects?
-- Is it Analytical or Product side?
+- Is that position mosly focused on Analytical/Product/Core side?
 - How many python/sql in percents will be on this position?
 
 ### Questions to Manager

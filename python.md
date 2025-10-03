@@ -21,8 +21,6 @@
 
 # Python
 
-That document based on https://github.com/yakimka/python_interview_questions
-
 ## Built-in Sequences, Objects, Functions
 
 ### Data types in python:
@@ -1659,9 +1657,11 @@ print(*msg)  # Here we unpack iterable
 
 - [Official Python doc](https://docs.python.org/3/library/index.html)
 - [Teach Yourself Computer Sciense](https://teachyourselfcs.com)
-- Fluent Python. Clear, Concise, and Effective Programming (Luciano Ramalho)
-- Designing Data-Intensive Applications (Martin Kleppmann)
-- Python for Data Analysis (Wes McKinney) 2nd edition
+- [yakimka_python_interview_questions](https://github.com/yakimka/python_interview_questions)
+- [BackendInterview](https://backendinterview.ru/)
+- `Fluent Python. Clear, Concise, and Effective Programming` (Luciano Ramalho)
+- `Designing Data-Intensive Applications` (Martin Kleppmann)
+- `Python for Data Analysis` (Wes McKinney) 2nd edition
 
 
 
