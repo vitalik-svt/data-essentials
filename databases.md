@@ -1022,9 +1022,13 @@ Me, personnaly divide review to three parts:
 ## Questions
 
 - Difference between Truncate and Delete: Delete delete row by row and log that. Truncate just drop whole table and recreates it
+
 - What languages SQL has?: DDL (definition: create, alter), DML (manipulation: select), DCL (control: grant)
+
 - Can you join with Null?: No, Null - not compatible, so Join Null on Null will be Null, so result will not appeared
+
 - Difference between Union and Union ALL: Union drop duplicates in result query
+
 - What types of window functions do you know?
     
     - lag(): previous row
@@ -1055,6 +1059,28 @@ Me, personnaly divide review to three parts:
     - Reduction of redundant and duplicate data
     - More Compact Database
     - Ensure Consistent data after modification
+
+- Why is bad to join with inequality symbols?
+
+- Why is bad to use `f"select * from table where param={some_value}"`?<br>
+It's unsafe because if it's general query, and that value resolving before - it goes to DB as is, and being executed as is.<br>
+But in parametrized queries, because DB CREATES execution plan BEFORE inserting parameter value, and then executed query exactly as it is, so it will consider sql injection as string
+
+```sql
+PREPARE my_query AS SELECT * FROM users WHERE id = $1;
+EXECUTE my_query(42);
+```
+or
+```python
+session.execute(text("SELECT * FROM users WHERE id = :id"), {"id": user_id})
+```
+or
+```python
+from sqlalchemy import text
+
+stmt = text("SELECT * FROM users WHERE id = :id")
+result = conn.execute(stmt, {"id": 42})
+```
 
 ## Coding tasks
 
