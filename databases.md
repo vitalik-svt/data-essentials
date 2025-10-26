@@ -308,12 +308,161 @@ Nice to have, when most of your operations involve not whole rows, but some colu
 
 ## Execution plan, Statistics (PostgrSQL)
 
+### Statistics
+
+It's additional info about tables, that could be collected by `ANALYZE`, or automatically (during autovacuum).
+
+Stored in two tables, basically:
+
+- **pg_class**
+	- reltuples: amount of rows
+	- relpages: amount of pages
+
+- **pg_statistics**(table)/**pg_stats**(view)
+Store data about fields/columns of table
+
+	- null_frac: share of nulls
+	- n_distinct: share of unique values
+	- most_common_values: array of most frequent values (100 limit by default, but can be changed)
+	- most_common_freqs: array of freauency of that most frequent values
+
+You can create your own statistics for one, many, columns so PG will know correlation between columns. 
+
+```sql
+CREATE STATISTICS s1 (dependencies) ON gender, city FROM people;
+ANALYZE people;
+```
+
+### How statistics actually helps
+
+For example, we already have (not only, but basic) that info in statistics:
+
+- n_distinct - Number of distinct values;
+- most_common_vals, most_common_freqs - Most frequent values;
+- null_frac — share of NULLs;
+
+So, based on that, PG can choose:
+
+1) Index Scan over Seq Scan
+
+```sql
+CREATE TABLE users AS
+SELECT 
+  generate_series(1, 1000000) AS id,
+  CASE WHEN random() < 0.01 THEN 'admin' ELSE 'user' END AS role;
+CREATE INDEX ON users(role);
+ANALYZE users;
+```
+```sql
+EXPLAIN SELECT * FROM users WHERE role = 'admin';
+----------
+n_distinct ≈ 2
+most_common_vals = {‘user’, ‘admin’}
+most_common_freqs = {0.99, 0.01}
+```
+
+So we're expecting only 1% or rows - Index Scan will be more efficient
+
+2) Type of Join
+
+```sql
+CREATE TABLE orders AS
+SELECT 
+  generate_series(1, 1000000) AS id,
+  floor(random() * 10000)::int AS customer_id;
+
+CREATE TABLE customers AS
+SELECT 
+  generate_series(1, 10000) AS id,
+  md5(random()::text) AS name;
+
+ANALYZE orders;
+ANALYZE customers;
+```
+```sql
+EXPLAIN SELECT * 
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+WHERE c.id < 100;
+----------
+customers.id has 10 000 unique values -> evenly spreaded
+WHERE c.id < 100 -> ~1% rows from customers
+orders.customer_id evenly spreaded by the same 10 000 id
+-> we expecting ~100 000 rows in result of join.
+
+So Planner will get Hash Join
+(small table customers goes in hash, then scanning orders)
+```
+
+Now creating an index for tables
+
+```sql
+CREATE INDEX ON orders(customer_id);
+```
+
+and select without filter
+```
+EXPLAIN SELECT * 
+FROM orders o
+JOIN customers c ON o.customer_id = c.id;
+----------
+Both tables are big now, and PG know that
+-> Choose Merge Join, because we have use index on id, sort and join more efficiently
+```
+
+3) Join's order
+
+```sql
+countries - 100 rows
+cities - 10000 rows
+users - 1000000 rows
+
+SELECT *
+FROM users u
+JOIN cities ci ON u.city_id = ci.id
+JOIN countries co ON ci.country_id = co.id
+WHERE co.name = 'France';
+
+Planner knows
+countries.name has 100 unique rows;
+'France' - is only 1%;
+So, it's more cities, and even more users
+
+At first: filter countries, then join with cities, and only then - with users
+```
+
+4) Group by type
+
+```sql
+CREATE TABLE sales AS
+SELECT
+  floor(random() * 10)::int AS region_id,
+  floor(random() * 1000)::int AS product_id,
+  (random() * 1000)::numeric AS revenue
+FROM generate_series(1, 1000000);
+ANALYZE sales;
+```
+
+```sql
+EXPLAIN SELECT region_id, COUNT(*) FROM sales GROUP BY region_id;
+------------
+
+Planner goes to pg_stats.n_distinct for region_id:
+and sees n_distinct = 10
+-> Understands that it will be only 10 groups 
+-> HashAggregate preferable over SortAggregate.
+
+-> If it would be n_distinct ≈ 100 000 (many groups),
+-> Would choose Sort + GroupAggregate, since has table would be too big
+```
+
 ### Execution plan
 
 It's logical plan, which RDBMS will use to execute query. Can be run by two commands.
 
-It's a tree where each leaf it's operation.
-And each operation have their own cost, that can be changed by administrator (but default pretty ok for most cases)
+It's a tree where each leaf it's an operation.
+And each operation have their own cost, that can be changed by administrator (but default pretty ok for most cases).
+Planner just choosing plan with smallest cost
 PostgreSQL Planner select right plan by himself, and you can't "help" with that
 
 - **Explain** - It's shows estimated (!) plan to given query
@@ -344,22 +493,6 @@ Scan operations:
 - **CTE Scan** - scan of CTE tables
 - **Values Scan** - scan of constants
 - **Function Scan** - scan of result of function
-
-### Statistics
-
-Stored in two tables, basically:
-
-- **pg_class**
-	- reltuples: amount of rows
-	- relpages: amount of pages
-
-- **pg_statistics**(table)/**pg_stats**(view)
-Store data about fields/columns of table
-
-	- null_frac: share of nulls
-	- n_distinct: share of unique values
-	- most_common_values: array of most frequent values (100 limit by default, but can be changed)
-	- most_common_freqs: array of freauency of that most frequent values
 
 ### Weigth of some basic types in db
 
