@@ -25,6 +25,13 @@
 
 ## Common questions to employer
 
+### General behave questions to know company (for any stage)
+
+- What exactly you love the most in the company?
+- What you don't like?
+- Where last time you were glad to work there?
+- What do you want to change in c compnay? Inside your team, or overall?
+
 ### Questions for HR 
 
 - Tell me about the team please
@@ -72,6 +79,7 @@
 - What task will be in priority each month?
 - How many engineers in team right now?
 - Are you going to hire more?
+- Are that role proposing some growth? What if I will want to becaome a manager/more senior after some time on that position?
 - Closing question: So do you have some concerns/doubts about my candidature?
 
 
